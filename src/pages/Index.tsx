@@ -9,13 +9,15 @@ const Index = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Welcome Back</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Firebase Configuration</h1>
         <p className="text-lg text-foreground/60">
-          Manage your team's fixtures and communications
+          Please enter your Firebase configuration details below
         </p>
       </div>
 
-      <FirebaseConfig />
+      <div className="max-w-2xl">
+        <FirebaseConfig />
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6 space-y-4 animate-slide-up">
