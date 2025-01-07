@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, Firestore, collection, getDocs } from 'firebase/firestore';
 
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
@@ -20,6 +20,7 @@ const initializeFirebase = () => {
   
   // Check if we have all required config values
   if (!config.apiKey || !config.authDomain || !config.projectId) {
+    console.error('Firebase configuration is incomplete');
     return false;
   }
 
@@ -27,10 +28,30 @@ const initializeFirebase = () => {
     app = initializeApp(config);
     auth = getAuth(app);
     db = getFirestore(app);
+    
+    // Test database connection
+    testDatabaseConnection();
     return true;
   } catch (error) {
     console.error('Error initializing Firebase:', error);
     return false;
+  }
+};
+
+// Function to test database connection
+const testDatabaseConnection = async () => {
+  if (!db) {
+    console.error('Firestore not initialized');
+    return;
+  }
+
+  try {
+    // Try to access a test collection
+    const testCollection = collection(db, '_test_connection');
+    await getDocs(testCollection);
+    console.log('Successfully connected to Firestore');
+  } catch (error) {
+    console.error('Error connecting to Firestore:', error);
   }
 };
 
@@ -58,6 +79,7 @@ export const setFirebaseConfig = (config: {
   localStorage.setItem('FIREBASE_APP_ID', config.appId);
   
   if (initializeFirebase()) {
+    console.log('Firebase reinitialized successfully');
     window.location.reload();
   }
 };
