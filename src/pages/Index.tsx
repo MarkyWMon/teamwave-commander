@@ -1,11 +1,54 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Card } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { useState } from "react";
 
 const Index = () => {
+  const [date, setDate] = useState<Date | undefined>(new Date());
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-4xl font-bold tracking-tight">Welcome Back</h1>
+        <p className="text-lg text-foreground/60">
+          Manage your team's fixtures and communications
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="p-6 space-y-4 animate-slide-up">
+          <h2 className="text-xl font-semibold">Upcoming Fixtures</h2>
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={setDate}
+            className="rounded-md border"
+          />
+        </Card>
+
+        <Card className="p-6 space-y-4 animate-slide-up [animation-delay:100ms]">
+          <h2 className="text-xl font-semibold">Recent Communications</h2>
+          <div className="space-y-2">
+            <p className="text-sm text-foreground/60">No recent communications</p>
+          </div>
+        </Card>
+
+        <Card className="p-6 space-y-4 animate-slide-up [animation-delay:200ms]">
+          <h2 className="text-xl font-semibold">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="p-4 text-sm rounded-md bg-secondary/50 hover:bg-secondary/70 transition-colors">
+              Schedule Fixture
+            </button>
+            <button className="p-4 text-sm rounded-md bg-secondary/50 hover:bg-secondary/70 transition-colors">
+              Send Email
+            </button>
+            <button className="p-4 text-sm rounded-md bg-secondary/50 hover:bg-secondary/70 transition-colors">
+              Add Team
+            </button>
+            <button className="p-4 text-sm rounded-md bg-secondary/50 hover:bg-secondary/70 transition-colors">
+              View Calendar
+            </button>
+          </div>
+        </Card>
       </div>
     </div>
   );
