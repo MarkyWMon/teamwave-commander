@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
+import { FirebaseConfig } from "@/components/FirebaseConfig";
 
 const Index = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -13,6 +14,8 @@ const Index = () => {
           Manage your team's fixtures and communications
         </p>
       </div>
+
+      <FirebaseConfig />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="p-6 space-y-4 animate-slide-up">
