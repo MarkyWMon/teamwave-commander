@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
+import Teams from "@/pages/Teams";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ const App = () => (
         <Layout>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/teams" element={<Teams />} />
           </Routes>
         </Layout>
       </BrowserRouter>
