@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { FirebaseConfig } from "@/components/FirebaseConfig";
 
 const Index = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -9,14 +8,10 @@ const Index = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold tracking-tight">Firebase Configuration</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-lg text-foreground/60">
-          Please enter your Firebase configuration details below
+          Welcome to your team management dashboard
         </p>
-      </div>
-
-      <div className="max-w-2xl">
-        <FirebaseConfig />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
