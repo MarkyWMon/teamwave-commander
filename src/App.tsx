@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
 import Teams from "@/pages/Teams";
+import Auth from "@/pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -13,12 +14,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
-        <Layout>
-          <Routes>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/teams" element={<Teams />} />
-          </Routes>
-        </Layout>
+          </Route>
+        </Routes>
       </BrowserRouter>
       <Toaster />
       <Sonner />
