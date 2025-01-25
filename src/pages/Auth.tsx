@@ -59,7 +59,9 @@ const Auth = () => {
           },
         });
         if (error) throw error;
-        toast.success("Account created successfully! Please check your email to verify your account.");
+        toast.success("Account created successfully! Please sign in to continue.");
+        setIsSignUp(false); // Switch to sign in form
+        form.reset(); // Clear the form
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: values.email,
@@ -139,7 +141,10 @@ const Auth = () => {
           <div className="text-sm text-muted-foreground text-center">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                form.reset();
+              }}
               className="text-primary hover:underline"
             >
               {isSignUp ? "Sign In" : "Sign Up"}
