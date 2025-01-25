@@ -3,29 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import TeamOfficialForm, { officialSchema } from "./TeamOfficialForm";
+import { Form } from "@/components/ui/form";
+import { officialSchema } from "./TeamOfficialForm";
 import { Team } from "@/types/team";
-
-const ageGroups = Array.from({ length: 11 }, (_, i) => `U${i + 8}`);
+import TeamBasicInfoForm from "./TeamBasicInfoForm";
+import TeamOfficialsList from "./TeamOfficialsList";
 
 const formSchema = z.object({
   name: z.string().min(2, "Team name must be at least 2 characters"),
@@ -41,7 +25,6 @@ interface TeamFormProps {
 }
 
 const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
-  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!team;
 
@@ -116,7 +99,6 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
 
       if (officialsError) throw officialsError;
 
-      queryClient.invalidateQueries({ queryKey: ["teams"] });
       toast.success(isEditing ? "Team updated successfully" : "Team created successfully");
       onSuccess?.();
     } catch (error: any) {
@@ -129,80 +111,9 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Team Name</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="Enter team color (e.g., Red Team)" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="age_group"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Age Group</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select age group" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {ageGroups.map((age) => (
-                    <SelectItem key={age} value={age}>
-                      {age}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-medium">Team Officials</h3>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                const officials = form.getValues("officials");
-                form.setValue("officials", [
-                  ...officials,
-                  { full_name: "", role: "manager", email: "", phone: "" },
-                ]);
-              }}
-            >
-              Add Official
-            </Button>
-          </div>
-
-          {form.watch("officials").map((_, index) => (
-            <TeamOfficialForm
-              key={index}
-              index={index}
-              form={form}
-              onRemove={() => {
-                const officials = form.getValues("officials");
-                form.setValue(
-                  "officials",
-                  officials.filter((_, i) => i !== index)
-                );
-              }}
-              isRemovable={index > 0}
-            />
-          ))}
-        </div>
-
+        <TeamBasicInfoForm form={form} />
+        <TeamOfficialsList form={form} />
+        
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Team" : "Create Team")}
