@@ -27,6 +27,7 @@ import * as z from "zod";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
+  club_name: z.string().min(2, "Club name must be at least 2 characters").optional(),
 });
 
 const ProfileCard = () => {
@@ -54,6 +55,7 @@ const ProfileCard = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       full_name: profile?.full_name || "",
+      club_name: profile?.club_name || "",
     },
   });
 
@@ -155,6 +157,9 @@ const ProfileCard = () => {
               <div>
                 <h3 className="font-medium">{profile?.full_name}</h3>
                 <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                {profile?.club_name && (
+                  <p className="text-sm text-muted-foreground">Club: {profile.club_name}</p>
+                )}
               </div>
             )}
           </div>
@@ -178,6 +183,21 @@ const ProfileCard = () => {
                     </FormItem>
                   )}
                 />
+
+                <FormField
+                  control={form.control}
+                  name="club_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Club Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter your club name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="flex gap-2">
                   <Button type="submit">Save Changes</Button>
                   <Button

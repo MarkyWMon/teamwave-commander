@@ -22,17 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import TeamOfficialForm, { officialSchema } from "./TeamOfficialForm";
 
 const ageGroups = Array.from({ length: 11 }, (_, i) => `U${i + 8}`);
-const roles = ["manager", "coach", "assistant_manager", "other"] as const;
-
-const officialSchema = z.object({
-  full_name: z.string().min(2, "Name must be at least 2 characters"),
-  role: z.enum(roles),
-  email: z.string().email().optional().or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-});
 
 const formSchema = z.object({
   name: z.string().min(2, "Team name must be at least 2 characters"),
@@ -72,13 +64,14 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
           name: values.name,
           age_group: values.age_group,
           created_by: session.user.id,
+          gender: "boys", // Default value, will be updated in next implementation
         })
         .select()
         .single();
 
       if (teamError) throw teamError;
 
-      // Insert officials with proper typing
+      // Insert officials
       const officialsToInsert = values.officials.map((official) => ({
         team_id: team.id,
         full_name: official.full_name,
@@ -113,7 +106,7 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
             <FormItem>
               <FormLabel>Team Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Enter team color (e.g., Red Team)" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -164,92 +157,19 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
           </div>
 
           {form.watch("officials").map((_, index) => (
-            <div key={index} className="space-y-4 p-4 border rounded-lg relative">
-              {index > 0 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={() => {
-                    const officials = form.getValues("officials");
-                    form.setValue(
-                      "officials",
-                      officials.filter((_, i) => i !== index)
-                    );
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-
-              <FormField
-                control={form.control}
-                name={`officials.${index}.full_name`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name={`officials.${index}.role`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {roles.map((role) => (
-                          <SelectItem key={role} value={role}>
-                            {role.replace("_", " ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name={`officials.${index}.email`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name={`officials.${index}.phone`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="tel" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <TeamOfficialForm
+              key={index}
+              index={index}
+              form={form}
+              onRemove={() => {
+                const officials = form.getValues("officials");
+                form.setValue(
+                  "officials",
+                  officials.filter((_, i) => i !== index)
+                );
+              }}
+              isRemovable={index > 0}
+            />
           ))}
         </div>
 
