@@ -1,32 +1,26 @@
 export type TeamPersonnel = {
   id: string;
   name: string;
-  role: 'manager' | 'coach' | 'fixtures_secretary' | 'administrator';
-  email: string;
+  role: 'manager' | 'coach' | 'assistant_manager' | 'other';
+  email?: string;
   phone?: string;
-};
-
-export type TeamColors = {
-  primary: string;
-  alternate: string;
-};
-
-export type WeeklySchedule = {
-  dayOfWeek: string;
-  time: string;
-  location?: string;
 };
 
 export type Team = {
   id: string;
   name: string;
-  isOpponent: boolean;
-  ageGroup: string;
-  gender: 'boys' | 'girls' | 'mixed';
-  division?: string;
-  colors: TeamColors;
-  weeklySchedule: WeeklySchedule;
-  personnel: TeamPersonnel[];
-  createdAt: Date;
-  updatedAt: Date;
+  age_group: string;
+  created_at: string;
+  created_by: string;
+  team_officials: TeamOfficial[];
+};
+
+export type TeamOfficial = {
+  id: string;
+  team_id: string;
+  full_name: string;
+  role: 'manager' | 'coach' | 'assistant_manager' | 'other';
+  email?: string;
+  phone?: string;
+  created_at: string;
 };
