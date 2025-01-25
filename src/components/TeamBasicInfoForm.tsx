@@ -34,13 +34,13 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
             <FormLabel>Age Group</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background">
                   <SelectValue placeholder="Select age group" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="bg-background border shadow-lg">
                 {ageGroups.map((age) => (
-                  <SelectItem key={age} value={age}>
+                  <SelectItem key={age} value={age} className="cursor-pointer">
                     {age}
                   </SelectItem>
                 ))}

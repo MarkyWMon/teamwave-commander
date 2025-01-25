@@ -72,13 +72,13 @@ const TeamOfficialForm = ({ index, form, onRemove, isRemovable = true }: TeamOff
             <FormLabel>Role</FormLabel>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="bg-background border shadow-lg">
                 {roles.map((role) => (
-                  <SelectItem key={role} value={role}>
+                  <SelectItem key={role} value={role} className="cursor-pointer">
                     {role.replace("_", " ")}
                   </SelectItem>
                 ))}

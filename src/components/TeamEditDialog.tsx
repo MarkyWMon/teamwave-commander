@@ -5,7 +5,6 @@ import { Pencil } from "lucide-react";
 import TeamForm from "./TeamForm";
 import { Team } from "@/types/team";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface TeamEditDialogProps {
@@ -29,7 +28,7 @@ const TeamEditDialog = ({ team }: TeamEditDialogProps) => {
           <Pencil className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background">
         <DialogHeader>
           <DialogTitle>Edit Team</DialogTitle>
         </DialogHeader>

@@ -82,25 +82,28 @@ export type Database = {
           age_group: string
           created_at: string
           created_by: string
-          gender: string
+          gender: Database["public"]["Enums"]["team_gender"]
           id: string
           name: string
+          team_color: string
         }
         Insert: {
           age_group: string
           created_at?: string
           created_by: string
-          gender: string
+          gender?: Database["public"]["Enums"]["team_gender"]
           id?: string
           name: string
+          team_color?: string
         }
         Update: {
           age_group?: string
           created_at?: string
           created_by?: string
-          gender?: string
+          gender?: Database["public"]["Enums"]["team_gender"]
           id?: string
           name?: string
+          team_color?: string
         }
         Relationships: []
       }
@@ -112,6 +115,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      team_gender: "boys" | "girls" | "mixed"
       team_official_role: "manager" | "coach" | "assistant_manager" | "other"
     }
     CompositeTypes: {
