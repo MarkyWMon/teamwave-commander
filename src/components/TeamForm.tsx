@@ -77,7 +77,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
             created_by: session.user.id,
             gender: "boys", // Default value, will be updated in next implementation
           })
-          .select()
+          .select("*, team_officials(*)")
           .single();
 
         if (teamError) throw teamError;
