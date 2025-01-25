@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TeamOfficialForm, { officialSchema } from "./TeamOfficialForm";
+import { Team } from "@/types/team";
 
 const ageGroups = Array.from({ length: 11 }, (_, i) => `U${i + 8}`);
 
@@ -35,19 +36,26 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface TeamFormProps {
+  team?: Team;
   onSuccess?: () => void;
 }
 
-const TeamForm = ({ onSuccess }: TeamFormProps) => {
+const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isEditing = !!team;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      age_group: "U12",
-      officials: [{ full_name: "", role: "manager", email: "", phone: "" }],
+      name: team?.name || "",
+      age_group: team?.age_group || "U12",
+      officials: team?.team_officials?.map(official => ({
+        full_name: official.full_name,
+        role: official.role,
+        email: official.email || "",
+        phone: official.phone || "",
+      })) || [{ full_name: "", role: "manager", email: "", phone: "" }],
     },
   });
 
@@ -57,23 +65,45 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
 
-      // Insert team
-      const { data: team, error: teamError } = await supabase
-        .from("teams")
-        .insert({
-          name: values.name,
-          age_group: values.age_group,
-          created_by: session.user.id,
-          gender: "boys", // Default value, will be updated in next implementation
-        })
-        .select()
-        .single();
+      if (isEditing && team) {
+        // Update team
+        const { error: teamError } = await supabase
+          .from("teams")
+          .update({
+            name: values.name,
+            age_group: values.age_group,
+          })
+          .eq("id", team.id);
 
-      if (teamError) throw teamError;
+        if (teamError) throw teamError;
+
+        // Delete existing officials
+        const { error: deleteError } = await supabase
+          .from("team_officials")
+          .delete()
+          .eq("team_id", team.id);
+
+        if (deleteError) throw deleteError;
+      } else {
+        // Insert new team
+        const { data: newTeam, error: teamError } = await supabase
+          .from("teams")
+          .insert({
+            name: values.name,
+            age_group: values.age_group,
+            created_by: session.user.id,
+            gender: "boys", // Default value, will be updated in next implementation
+          })
+          .select()
+          .single();
+
+        if (teamError) throw teamError;
+        team = newTeam;
+      }
 
       // Insert officials
       const officialsToInsert = values.officials.map((official) => ({
-        team_id: team.id,
+        team_id: team!.id,
         full_name: official.full_name,
         role: official.role,
         email: official.email || null,
@@ -87,7 +117,7 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
       if (officialsError) throw officialsError;
 
       queryClient.invalidateQueries({ queryKey: ["teams"] });
-      toast.success("Team created successfully");
+      toast.success(isEditing ? "Team updated successfully" : "Team created successfully");
       onSuccess?.();
     } catch (error: any) {
       toast.error(error.message);
@@ -175,7 +205,7 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
 
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Team"}
+            {isSubmitting ? (isEditing ? "Updating..." : "Creating...") : (isEditing ? "Update Team" : "Create Team")}
           </Button>
         </div>
       </form>

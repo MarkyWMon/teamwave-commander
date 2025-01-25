@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import TeamForm from "@/components/TeamForm";
+import TeamEditDialog from "@/components/TeamEditDialog";
 
 const Teams = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -63,11 +64,12 @@ const Teams = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {teams?.map((team) => (
             <Card key={team.id}>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>{team.name}</CardTitle>
-                <p className="text-sm text-foreground/60">{team.age_group}</p>
+                <TeamEditDialog team={team} />
               </CardHeader>
               <CardContent>
+                <p className="text-sm text-foreground/60 mb-4">{team.age_group}</p>
                 <div className="space-y-2">
                   {team.team_officials.map((official) => (
                     <div key={official.id} className="text-sm">
