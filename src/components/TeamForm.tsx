@@ -78,15 +78,18 @@ const TeamForm = ({ onSuccess }: TeamFormProps) => {
 
       if (teamError) throw teamError;
 
-      // Insert officials
+      // Insert officials with proper typing
+      const officialsToInsert = values.officials.map((official) => ({
+        team_id: team.id,
+        full_name: official.full_name,
+        role: official.role,
+        email: official.email || null,
+        phone: official.phone || null,
+      }));
+
       const { error: officialsError } = await supabase
         .from("team_officials")
-        .insert(
-          values.officials.map((official) => ({
-            ...official,
-            team_id: team.id,
-          }))
-        );
+        .insert(officialsToInsert);
 
       if (officialsError) throw officialsError;
 
