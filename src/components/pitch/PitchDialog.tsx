@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import PitchForm from "./PitchForm";
+import PitchForm from "@/components/PitchForm";
 
 interface PitchDialogProps {
   open: boolean;
