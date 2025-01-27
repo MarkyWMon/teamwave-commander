@@ -86,9 +86,18 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
         if (error) throw error;
         toast.success("Pitch updated successfully");
       } else {
+        // Ensure all required fields are present and correctly typed
         const insertData: TablesInsert<"pitches"> = {
           ...values,
           created_by: session.user.id,
+          name: values.name,
+          address_line1: values.address_line1,
+          city: values.city,
+          postal_code: values.postal_code,
+          latitude: values.latitude,
+          longitude: values.longitude,
+          surface_type: values.surface_type,
+          lighting_type: values.lighting_type,
         };
 
         const { error } = await supabase
