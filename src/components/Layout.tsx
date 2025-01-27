@@ -101,7 +101,7 @@ const Layout = () => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <NavItem to="/">Dashboard</NavItem>
-              <NavItem to="/fixtures">Fixtures</NavItem>
+              <NavItem to="/pitches">Pitches</NavItem>
               <NavItem to="/teams">Teams</NavItem>
               <NavItem to="/communications">Communications</NavItem>
             </div>
