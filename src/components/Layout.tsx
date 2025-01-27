@@ -103,7 +103,6 @@ const Layout = () => {
               <NavItem to="/">Dashboard</NavItem>
               <NavItem to="/pitches">Pitches</NavItem>
               <NavItem to="/teams">Teams</NavItem>
-              <NavItem to="/communications">Communications</NavItem>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
