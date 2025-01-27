@@ -7,6 +7,7 @@ import Layout from "@/components/Layout";
 import Index from "@/pages/Index";
 import Teams from "@/pages/Teams";
 import Auth from "@/pages/Auth";
+import Pitches from "@/pages/Pitches";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
           <Route element={<Layout />}>
             <Route path="/" element={<Index />} />
             <Route path="/teams" element={<Teams />} />
+            <Route path="/pitches" element={<Pitches />} />
           </Route>
         </Routes>
       </BrowserRouter>

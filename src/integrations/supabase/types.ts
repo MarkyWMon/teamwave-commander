@@ -9,6 +9,75 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      pitches: {
+        Row: {
+          access_instructions: string | null
+          address_line1: string
+          address_line2: string | null
+          amenities: Json | null
+          city: string
+          county: string | null
+          created_at: string
+          created_by: string
+          equipment_requirements: string | null
+          id: string
+          latitude: number
+          lighting_type: Database["public"]["Enums"]["pitch_lighting"]
+          longitude: number
+          name: string
+          parking_info: string | null
+          postal_code: string
+          special_instructions: string | null
+          surface_type: Database["public"]["Enums"]["pitch_surface"]
+          updated_at: string
+          usage_restrictions: string | null
+        }
+        Insert: {
+          access_instructions?: string | null
+          address_line1: string
+          address_line2?: string | null
+          amenities?: Json | null
+          city: string
+          county?: string | null
+          created_at?: string
+          created_by: string
+          equipment_requirements?: string | null
+          id?: string
+          latitude: number
+          lighting_type?: Database["public"]["Enums"]["pitch_lighting"]
+          longitude: number
+          name: string
+          parking_info?: string | null
+          postal_code: string
+          special_instructions?: string | null
+          surface_type?: Database["public"]["Enums"]["pitch_surface"]
+          updated_at?: string
+          usage_restrictions?: string | null
+        }
+        Update: {
+          access_instructions?: string | null
+          address_line1?: string
+          address_line2?: string | null
+          amenities?: Json | null
+          city?: string
+          county?: string | null
+          created_at?: string
+          created_by?: string
+          equipment_requirements?: string | null
+          id?: string
+          latitude?: number
+          lighting_type?: Database["public"]["Enums"]["pitch_lighting"]
+          longitude?: number
+          name?: string
+          parking_info?: string | null
+          postal_code?: string
+          special_instructions?: string | null
+          surface_type?: Database["public"]["Enums"]["pitch_surface"]
+          updated_at?: string
+          usage_restrictions?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -115,6 +184,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      pitch_lighting: "none" | "floodlights" | "natural_only" | "partial"
+      pitch_surface:
+        | "grass"
+        | "artificial_grass"
+        | "hybrid"
+        | "3g"
+        | "4g"
+        | "5g"
+        | "astroturf"
+        | "other"
       team_gender: "boys" | "girls" | "mixed"
       team_official_role: "manager" | "coach" | "assistant_manager" | "other"
     }
