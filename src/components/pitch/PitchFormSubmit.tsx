@@ -20,8 +20,24 @@ export const submitPitchForm = async ({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("You must be logged in to manage pitches");
 
-    const pitchData = {
-      ...values,
+    // Ensure all required fields are present
+    const pitchData: TablesInsert<"pitches"> = {
+      name: values.name,
+      address_line1: values.address_line1,
+      address_line2: values.address_line2,
+      city: values.city,
+      county: values.county,
+      postal_code: values.postal_code,
+      latitude: values.latitude,
+      longitude: values.longitude,
+      surface_type: values.surface_type,
+      lighting_type: values.lighting_type,
+      parking_info: values.parking_info,
+      access_instructions: values.access_instructions,
+      equipment_requirements: values.equipment_requirements,
+      amenities: values.amenities,
+      usage_restrictions: values.usage_restrictions,
+      special_instructions: values.special_instructions,
       created_by: session.user.id,
     };
 
