@@ -18,34 +18,25 @@ export const submitPitchForm = async ({
 }: PitchFormSubmitProps) => {
   try {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error("No session");
+    if (!session) throw new Error("You must be logged in to manage pitches");
+
+    const pitchData = {
+      ...values,
+      created_by: session.user.id,
+    };
 
     if (isEditing && pitchId) {
       const { error } = await supabase
         .from("pitches")
-        .update(values)
+        .update(pitchData)
         .eq("id", pitchId);
 
       if (error) throw error;
       toast.success("Pitch updated successfully");
     } else {
-      // Ensure all required fields are present and correctly typed
-      const insertData: TablesInsert<"pitches"> = {
-        ...values,
-        created_by: session.user.id,
-        name: values.name,
-        address_line1: values.address_line1,
-        city: values.city,
-        postal_code: values.postal_code,
-        latitude: values.latitude,
-        longitude: values.longitude,
-        surface_type: values.surface_type,
-        lighting_type: values.lighting_type,
-      };
-
       const { error } = await supabase
         .from("pitches")
-        .insert(insertData);
+        .insert(pitchData);
 
       if (error) throw error;
       toast.success("Pitch created successfully");
@@ -53,6 +44,7 @@ export const submitPitchForm = async ({
 
     onSuccess?.();
   } catch (error: any) {
+    console.error("Error submitting pitch form:", error);
     toast.error(error.message);
   }
 };

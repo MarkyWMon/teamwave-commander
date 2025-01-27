@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import PitchList from "@/components/PitchList";
 import PitchDialog from "@/components/PitchDialog";
+import PitchCard from "@/components/PitchCard";
 
 const Pitches = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -39,13 +39,18 @@ const Pitches = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <PitchList 
-          pitches={pitches || []} 
-          onEdit={(pitch) => {
-            setSelectedPitch(pitch);
-            setIsDialogOpen(true);
-          }}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {(pitches || []).map((pitch) => (
+            <PitchCard
+              key={pitch.id}
+              pitch={pitch}
+              onEdit={(pitch) => {
+                setSelectedPitch(pitch);
+                setIsDialogOpen(true);
+              }}
+            />
+          ))}
+        </div>
       )}
 
       <PitchDialog
