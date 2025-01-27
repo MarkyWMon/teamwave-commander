@@ -10,6 +10,7 @@ import PitchBasicInfo from "./PitchBasicInfo";
 import PitchLocation from "./PitchLocation";
 import PitchSpecifications from "./PitchSpecifications";
 import PitchAmenities from "./PitchAmenities";
+import type { TablesInsert } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   name: z.string().min(2, "Pitch name must be at least 2 characters"),
@@ -34,8 +35,10 @@ const formSchema = z.object({
   special_instructions: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 interface PitchFormProps {
-  pitch?: any;
+  pitch?: TablesInsert<"pitches">;
   onSuccess?: () => void;
 }
 
@@ -43,7 +46,7 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
   const mapRef = useRef(null);
   const isEditing = !!pitch;
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: pitch?.name || "",
@@ -59,7 +62,7 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
       parking_info: pitch?.parking_info || "",
       access_instructions: pitch?.access_instructions || "",
       equipment_requirements: pitch?.equipment_requirements || "",
-      amenities: pitch?.amenities || {
+      amenities: pitch?.amenities as FormValues["amenities"] || {
         changing_rooms: false,
         toilets: false,
         refreshments: false,
@@ -69,7 +72,7 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
@@ -83,12 +86,14 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
         if (error) throw error;
         toast.success("Pitch updated successfully");
       } else {
+        const insertData: TablesInsert<"pitches"> = {
+          ...values,
+          created_by: session.user.id,
+        };
+
         const { error } = await supabase
           .from("pitches")
-          .insert({
-            ...values,
-            created_by: session.user.id,
-          });
+          .insert(insertData);
 
         if (error) throw error;
         toast.success("Pitch created successfully");
