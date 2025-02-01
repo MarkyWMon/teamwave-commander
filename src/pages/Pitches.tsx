@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import PitchDialog from "@/components/PitchDialog";
-import PitchCard from "@/components/PitchCard";
+import PitchDialog from "@/components/pitch/PitchDialog";
+import PitchCard from "@/components/pitch/PitchCard";
 
 const Pitches = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
