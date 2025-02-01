@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
 import { useWatch } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PitchLocationProps {
   form: UseFormReturn<any>;
@@ -22,12 +23,19 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
   const mapboxToken = useRef<string | null>(null);
+  const { toast } = useToast();
 
   // Watch postal code changes
   const postalCode = useWatch({
     control: form.control,
     name: "postal_code",
   });
+
+  // Function to update form coordinates
+  const updateFormCoordinates = (lng: number, lat: number) => {
+    form.setValue("longitude", lng);
+    form.setValue("latitude", lat);
+  };
 
   // Function to geocode postal code and update map
   const updateMapLocation = async (postcode: string) => {
@@ -47,16 +55,24 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
         
         map.current.flyTo({
           center: [longitude, latitude],
-          zoom: 15,
+          zoom: 16,
         });
 
         marker.current.setLngLat([longitude, latitude]);
+        updateFormCoordinates(longitude, latitude);
         
-        form.setValue("longitude", longitude);
-        form.setValue("latitude", latitude);
+        toast({
+          title: "Location Updated",
+          description: "Map centered on postal code. You can click anywhere on the map to adjust the exact location.",
+        });
       }
     } catch (error) {
       console.error("Error geocoding postal code:", error);
+      toast({
+        title: "Error",
+        description: "Failed to find location for this postal code",
+        variant: "destructive",
+      });
     }
   };
 
@@ -93,16 +109,29 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
 
         marker.current = new mapboxgl.Marker({
           draggable: true,
+          color: "#0ea5e9",
         })
           .setLngLat([form.getValues("longitude") || -0.1276, form.getValues("latitude") || 51.5074])
           .addTo(map.current);
 
+        // Handle marker drag
         marker.current.on("dragend", () => {
           const lngLat = marker.current?.getLngLat();
           if (lngLat) {
-            form.setValue("longitude", lngLat.lng);
-            form.setValue("latitude", lngLat.lat);
+            updateFormCoordinates(lngLat.lng, lngLat.lat);
           }
+        });
+
+        // Handle map click
+        map.current.on("click", (e) => {
+          const { lng, lat } = e.lngLat;
+          marker.current?.setLngLat([lng, lat]);
+          updateFormCoordinates(lng, lat);
+          
+          toast({
+            title: "Location Updated",
+            description: "Pin location has been updated based on your click.",
+          });
         });
 
         map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
@@ -114,6 +143,11 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
         }
       } catch (error) {
         console.error('Error initializing map:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize the map",
+          variant: "destructive",
+        });
       }
     };
 
@@ -200,7 +234,12 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
         />
       </div>
 
-      <div ref={mapRef} className="w-full h-[400px] rounded-lg overflow-hidden" />
+      <div className="relative">
+        <div ref={mapRef} className="w-full h-[400px] rounded-lg overflow-hidden" />
+        <div className="absolute bottom-4 right-4 bg-white/90 p-2 rounded-md text-sm">
+          Click anywhere on the map to set the exact location
+        </div>
+      </div>
     </div>
   );
 };
