@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PitchLocationProps {
   form: UseFormReturn<any>;
@@ -21,32 +22,49 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
   const marker = useRef<mapboxgl.Marker | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    const initializeMap = async () => {
+      if (!mapRef.current) return;
 
-    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || "";
-    
-    map.current = new mapboxgl.Map({
-      container: mapRef.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: [form.getValues("longitude"), form.getValues("latitude")],
-      zoom: 13,
-    });
+      try {
+        const { data: { secret: mapboxToken } } = await supabase.functions.invoke('get-secret', {
+          body: { name: 'MAPBOX_PUBLIC_TOKEN' }
+        });
 
-    marker.current = new mapboxgl.Marker({
-      draggable: true,
-    })
-      .setLngLat([form.getValues("longitude"), form.getValues("latitude")])
-      .addTo(map.current);
+        if (!mapboxToken) {
+          console.error('Mapbox token not found');
+          return;
+        }
 
-    marker.current.on("dragend", () => {
-      const lngLat = marker.current?.getLngLat();
-      if (lngLat) {
-        form.setValue("longitude", lngLat.lng);
-        form.setValue("latitude", lngLat.lat);
+        mapboxgl.accessToken = mapboxToken;
+        
+        map.current = new mapboxgl.Map({
+          container: mapRef.current,
+          style: "mapbox://styles/mapbox/streets-v12",
+          center: [form.getValues("longitude") || -0.1276, form.getValues("latitude") || 51.5074],
+          zoom: 13,
+        });
+
+        marker.current = new mapboxgl.Marker({
+          draggable: true,
+        })
+          .setLngLat([form.getValues("longitude") || -0.1276, form.getValues("latitude") || 51.5074])
+          .addTo(map.current);
+
+        marker.current.on("dragend", () => {
+          const lngLat = marker.current?.getLngLat();
+          if (lngLat) {
+            form.setValue("longitude", lngLat.lng);
+            form.setValue("latitude", lngLat.lat);
+          }
+        });
+
+        map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+      } catch (error) {
+        console.error('Error initializing map:', error);
       }
-    });
+    };
 
-    map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+    initializeMap();
 
     return () => {
       map.current?.remove();
