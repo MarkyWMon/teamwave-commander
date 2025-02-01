@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Edit2, Leaf, Lightbulb, Waves } from "lucide-react";
+import { Edit2, Leaf, Grid3X3 } from "lucide-react";
 
 interface PitchCardProps {
   pitch: {
@@ -20,27 +20,21 @@ const getSurfaceIcon = (type: string) => {
     case "3g":
     case "4g":
     case "5g":
-      return <Waves className="h-4 w-4 text-blue-600" />;
+      return <Grid3X3 className="h-4 w-4 text-blue-600" />;
     default:
       return null;
   }
 };
 
-const getLightingIcon = (type: string) => {
-  if (type === "none") return null;
-  return <Lightbulb className="h-4 w-4 text-yellow-600" />;
-};
-
 const PitchCard = ({ pitch, onEdit }: PitchCardProps) => {
   return (
-    <Card className="w-full">
+    <Card className="w-full hover:shadow-md transition-shadow">
       <CardContent className="pt-6">
         <div className="space-y-2">
           <div className="flex justify-between items-start">
             <h3 className="font-semibold text-lg">{pitch.name}</h3>
             <div className="flex gap-2">
               {getSurfaceIcon(pitch.surface_type)}
-              {getLightingIcon(pitch.lighting_type)}
             </div>
           </div>
           <p className="text-sm text-muted-foreground">{pitch.city}</p>

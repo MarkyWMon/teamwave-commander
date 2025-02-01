@@ -37,9 +37,11 @@ const Pitches = () => {
       </div>
 
       {isLoading ? (
-        <div>Loading...</div>
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
           {(pitches || []).map((pitch) => (
             <PitchCard
               key={pitch.id}
