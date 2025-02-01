@@ -23,7 +23,7 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
   useEffect(() => {
     if (!mapRef.current) return;
 
-    mapboxgl.accessToken = process.env.MAPBOX_PUBLIC_TOKEN || "";
+    mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_PUBLIC_TOKEN || "";
     
     map.current = new mapboxgl.Map({
       container: mapRef.current,
