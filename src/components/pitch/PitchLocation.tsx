@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
+import { useWatch } from "react-hook-form";
 
 interface PitchLocationProps {
   form: UseFormReturn<any>;
@@ -20,22 +21,68 @@ interface PitchLocationProps {
 const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
   const map = useRef<mapboxgl.Map | null>(null);
   const marker = useRef<mapboxgl.Marker | null>(null);
+  const mapboxToken = useRef<string | null>(null);
+
+  // Watch postal code changes
+  const postalCode = useWatch({
+    control: form.control,
+    name: "postal_code",
+  });
+
+  // Function to geocode postal code and update map
+  const updateMapLocation = async (postcode: string) => {
+    if (!mapboxToken.current || !postcode || !map.current || !marker.current) return;
+
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          postcode
+        )}.json?access_token=${mapboxToken.current}&country=GB`
+      );
+
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const [longitude, latitude] = data.features[0].center;
+        
+        map.current.flyTo({
+          center: [longitude, latitude],
+          zoom: 15,
+        });
+
+        marker.current.setLngLat([longitude, latitude]);
+        
+        form.setValue("longitude", longitude);
+        form.setValue("latitude", latitude);
+      }
+    } catch (error) {
+      console.error("Error geocoding postal code:", error);
+    }
+  };
+
+  // Watch for postal code changes
+  useEffect(() => {
+    if (postalCode && postalCode.length >= 5) {
+      updateMapLocation(postalCode);
+    }
+  }, [postalCode]);
 
   useEffect(() => {
     const initializeMap = async () => {
       if (!mapRef.current) return;
 
       try {
-        const { data: { secret: mapboxToken } } = await supabase.functions.invoke('get-secret', {
+        const { data: { secret: token } } = await supabase.functions.invoke('get-secret', {
           body: { name: 'MAPBOX_PUBLIC_TOKEN' }
         });
 
-        if (!mapboxToken) {
+        if (!token) {
           console.error('Mapbox token not found');
           return;
         }
 
-        mapboxgl.accessToken = mapboxToken;
+        mapboxToken.current = token;
+        mapboxgl.accessToken = token;
         
         map.current = new mapboxgl.Map({
           container: mapRef.current,
@@ -59,6 +106,12 @@ const PitchLocation = ({ form, mapRef }: PitchLocationProps) => {
         });
 
         map.current.addControl(new mapboxgl.NavigationControl(), "top-right");
+
+        // Initial geocoding if postal code exists
+        const initialPostcode = form.getValues("postal_code");
+        if (initialPostcode) {
+          updateMapLocation(initialPostcode);
+        }
       } catch (error) {
         console.error('Error initializing map:', error);
       }
