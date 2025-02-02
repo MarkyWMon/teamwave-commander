@@ -1,7 +1,7 @@
 export type TeamPersonnel = {
   id: string;
   name: string;
-  role: 'manager' | 'coach' | 'assistant_manager' | 'other';
+  role: 'manager' | 'coach' | 'assistant_manager' | 'fixtures_secretary' | 'other';
   email?: string;
   phone?: string;
 };
@@ -22,7 +22,7 @@ export type TeamOfficial = {
   id: string;
   team_id: string;
   full_name: string;
-  role: 'manager' | 'coach' | 'assistant_manager' | 'other';
+  role: 'manager' | 'coach' | 'assistant_manager' | 'fixtures_secretary' | 'other';
   email?: string | null;
   phone?: string | null;
   created_at: string;
