@@ -3,8 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
+import { useEffect } from "react";
 
 const ageGroups = Array.from({ length: 11 }, (_, i) => `U${i + 8}`);
+const DEFAULT_HOME_TEAM = "Withdean Youth FC";
 
 interface TeamBasicInfoFormProps {
   form: UseFormReturn<any>;
@@ -12,6 +14,18 @@ interface TeamBasicInfoFormProps {
 
 const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
   const isOpponent = form.watch("is_opponent");
+
+  // Effect to handle team name population based on team type
+  useEffect(() => {
+    if (!isOpponent) {
+      form.setValue("name", DEFAULT_HOME_TEAM);
+    } else {
+      // Only clear if it's the default home team name
+      if (form.getValues("name") === DEFAULT_HOME_TEAM) {
+        form.setValue("name", "");
+      }
+    }
+  }, [isOpponent, form]);
 
   return (
     <div className="space-y-6">
@@ -46,6 +60,7 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
               <Input 
                 {...field} 
                 placeholder={isOpponent ? "Enter opponent team name" : "Enter team name"}
+                readOnly={!isOpponent}
               />
             </FormControl>
             <FormMessage />
