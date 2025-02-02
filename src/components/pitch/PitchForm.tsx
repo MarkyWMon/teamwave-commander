@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -17,7 +16,6 @@ interface PitchFormProps {
 }
 
 const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
-  const mapRef = useRef(null);
   const isEditing = !!pitch;
 
   const form = useForm<FormValues>({
@@ -59,7 +57,7 @@ const PitchForm = ({ pitch, onSuccess }: PitchFormProps) => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <PitchBasicInfo form={form} />
-        <PitchLocation form={form} mapRef={mapRef} />
+        <PitchLocation form={form} />
         <PitchSpecifications form={form} />
         <PitchAmenities form={form} />
         
