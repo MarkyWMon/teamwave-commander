@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <Router>
           <Routes>
             <Route path="/auth" element={<Auth />} />

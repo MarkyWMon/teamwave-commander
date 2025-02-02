@@ -14,6 +14,7 @@ export type Team = {
   created_by: string;
   is_opponent: boolean;
   gender: 'boys' | 'girls' | 'mixed';
+  team_color: string;
   team_officials: TeamOfficial[];
 };
 
@@ -22,7 +23,7 @@ export type TeamOfficial = {
   team_id: string;
   full_name: string;
   role: 'manager' | 'coach' | 'assistant_manager' | 'other';
-  email?: string;
-  phone?: string;
+  email?: string | null;
+  phone?: string | null;
   created_at: string;
 };

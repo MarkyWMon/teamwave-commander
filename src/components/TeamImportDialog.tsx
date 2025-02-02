@@ -5,10 +5,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import Papa from "papaparse";
+import { TablesInsert } from "@/integrations/supabase/types";
 
 interface TeamImportDialogProps {
   onSuccess?: () => void;
 }
+
+type TeamInsert = TablesInsert<"teams">;
 
 const TeamImportDialog = ({ onSuccess }: TeamImportDialogProps) => {
   const [file, setFile] = useState<File | null>(null);
@@ -57,12 +60,12 @@ const TeamImportDialog = ({ onSuccess }: TeamImportDialogProps) => {
       Papa.parse(file, {
         header: true,
         complete: async (results) => {
-          const teams = results.data.map((row: any) => ({
+          const teams: TeamInsert[] = results.data.map((row: any) => ({
             name: row[mappings.name],
             age_group: row[mappings.age_group] || "U12",
             is_opponent: true,
             created_by: session.user.id,
-            gender: "boys" as const, // Explicitly type as a valid gender value
+            gender: "boys" as const,
             team_color: "blue",
           }));
 
