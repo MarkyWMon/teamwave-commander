@@ -62,7 +62,8 @@ const TeamImportDialog = ({ onSuccess }: TeamImportDialogProps) => {
             age_group: row[mappings.age_group] || "U12",
             is_opponent: true,
             created_by: session.user.id,
-            gender: "boys",
+            gender: "boys" as const, // Explicitly type as a valid gender value
+            team_color: "blue",
           }));
 
           const { error: teamsError } = await supabase

@@ -12,6 +12,8 @@ export type Team = {
   age_group: string;
   created_at: string;
   created_by: string;
+  is_opponent: boolean;
+  gender: 'boys' | 'girls' | 'mixed';
   team_officials: TeamOfficial[];
 };
 
