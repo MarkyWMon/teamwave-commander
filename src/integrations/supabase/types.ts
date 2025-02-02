@@ -9,6 +9,67 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      fixtures: {
+        Row: {
+          away_team_id: string
+          created_at: string
+          created_by: string
+          home_team_id: string
+          id: string
+          match_date: string
+          notes: string | null
+          pitch_id: string
+          status: Database["public"]["Enums"]["match_status"]
+          updated_at: string
+        }
+        Insert: {
+          away_team_id: string
+          created_at?: string
+          created_by: string
+          home_team_id: string
+          id?: string
+          match_date: string
+          notes?: string | null
+          pitch_id: string
+          status?: Database["public"]["Enums"]["match_status"]
+          updated_at?: string
+        }
+        Update: {
+          away_team_id?: string
+          created_at?: string
+          created_by?: string
+          home_team_id?: string
+          id?: string
+          match_date?: string
+          notes?: string | null
+          pitch_id?: string
+          status?: Database["public"]["Enums"]["match_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fixtures_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fixtures_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fixtures_pitch_id_fkey"
+            columns: ["pitch_id"]
+            isOneToOne: false
+            referencedRelation: "pitches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pitches: {
         Row: {
           access_instructions: string | null
@@ -223,6 +284,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      match_status: "scheduled" | "completed" | "cancelled" | "postponed"
       pitch_lighting: "none" | "floodlights" | "natural_only" | "partial"
       pitch_surface:
         | "grass"
