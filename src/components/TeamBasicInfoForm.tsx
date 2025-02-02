@@ -12,7 +12,6 @@ interface TeamBasicInfoFormProps {
 
 const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
   const isOpponent = form.watch("is_opponent");
-  const showTeamColor = !isOpponent;
 
   return (
     <div className="space-y-6">
@@ -46,9 +45,7 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
             <FormControl>
               <Input 
                 {...field} 
-                placeholder="Enter team name" 
-                value={!isOpponent ? `Withdean Youth ${form.watch("team_color") || ""}`.trim() : field.value}
-                readOnly={!isOpponent}
+                placeholder={isOpponent ? "Enter opponent team name" : "Enter team name"}
               />
             </FormControl>
             <FormMessage />
@@ -56,7 +53,7 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
         )}
       />
 
-      {showTeamColor && (
+      {!isOpponent && (
         <FormField
           control={form.control}
           name="team_color"
@@ -67,10 +64,6 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
                 <Input 
                   {...field} 
                   placeholder="Enter team color (e.g., Blue, Red)" 
-                  onChange={(e) => {
-                    field.onChange(e);
-                    form.setValue("name", `Withdean Youth ${e.target.value}`.trim());
-                  }}
                 />
               </FormControl>
               <FormMessage />

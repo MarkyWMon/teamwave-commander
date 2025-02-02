@@ -53,10 +53,10 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
       if (!session) throw new Error("No session");
 
       const teamData = {
-        name: values.is_opponent ? values.name : `Withdean Youth ${values.team_color}`.trim(),
+        name: values.name,
         age_group: values.age_group,
         is_opponent: values.is_opponent,
-        team_color: values.team_color || "blue",
+        team_color: values.is_opponent ? null : (values.team_color || "blue"),
       };
 
       if (isEditing && team) {
