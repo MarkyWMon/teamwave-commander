@@ -45,7 +45,7 @@ const ImportFieldMapping = ({
               <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select team name field" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white border shadow-lg">
                 {headers.map((header) => (
                   <SelectItem key={header} value={header}>
                     {header}
@@ -64,7 +64,7 @@ const ImportFieldMapping = ({
               <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select contact name field" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white border shadow-lg">
                 {headers.map((header) => (
                   <SelectItem key={header} value={header}>
                     {header}
@@ -83,7 +83,7 @@ const ImportFieldMapping = ({
               <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select contact email field" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white border shadow-lg">
                 {headers.map((header) => (
                   <SelectItem key={header} value={header}>
                     {header}
@@ -102,7 +102,7 @@ const ImportFieldMapping = ({
               <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select contact phone field" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white border shadow-lg">
                 {headers.map((header) => (
                   <SelectItem key={header} value={header}>
                     {header}

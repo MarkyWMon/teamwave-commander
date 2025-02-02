@@ -27,7 +27,7 @@ const TeamEditorDialog = ({ team, onSave, open, onOpenChange, roles }: TeamEdito
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>Edit Team Details</DialogTitle>
         </DialogHeader>
@@ -38,7 +38,7 @@ const TeamEditorDialog = ({ team, onSave, open, onOpenChange, roles }: TeamEdito
               <SelectTrigger className="bg-white">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white border shadow-lg">
                 {roles.map((role) => (
                   <SelectItem key={role} value={role}>
                     {role.replace("_", " ")}
@@ -93,7 +93,7 @@ const ImportPreview = ({
             <SelectTrigger className="bg-white">
               <SelectValue placeholder="Select age group" />
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-white border shadow-lg">
               {ageGroups.map((age) => (
                 <SelectItem key={age} value={age}>
                   {age}
@@ -110,7 +110,7 @@ const ImportPreview = ({
               checked={isOpponent}
               onCheckedChange={(checked) => setIsOpponent(checked as boolean)}
             />
-            <span>Opponent Teams</span>
+            <span>{isOpponent ? "Opponent Teams" : "Home Teams"}</span>
           </div>
         </div>
       </div>
