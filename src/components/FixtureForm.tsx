@@ -37,6 +37,16 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
     },
   });
 
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (!session) throw new Error("No session");
+      return session;
+    },
+  });
+
   const { data: homeTeams } = useQuery({
     queryKey: ["home-teams"],
     queryFn: async () => {
@@ -79,6 +89,11 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!session?.user) {
+      toast.error("You must be logged in to create fixtures");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       const { error } = await supabase
@@ -86,6 +101,7 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
         .insert({
           ...values,
           match_date: values.match_date.toISOString(),
+          created_by: session.user.id,
         });
 
       if (error) throw error;
