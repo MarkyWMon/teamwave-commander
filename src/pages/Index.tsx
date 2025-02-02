@@ -84,19 +84,19 @@ const Index = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="p-6 lg:col-span-1">
+        <Card className="p-6 lg:col-span-1 bg-white">
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Calendar</h2>
             <Calendar
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md border"
+              className="rounded-md border shadow-sm"
             />
           </div>
         </Card>
 
-        <Card className="p-6 lg:col-span-2">
+        <Card className="p-6 lg:col-span-2 bg-white">
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">
@@ -109,12 +109,23 @@ const Index = () => {
 
             <div className="space-y-4">
               {fixtures?.length === 0 ? (
-                <div className="text-center py-8">
+                <div className="text-center py-12 space-y-4">
                   <p className="text-muted-foreground">No fixtures scheduled for this date</p>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setIsFixtureDialogOpen(true)}
+                    className="mt-2"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Schedule a Fixture
+                  </Button>
                 </div>
               ) : (
                 fixtures?.map((fixture) => (
-                  <Card key={fixture.id} className="p-4 hover:bg-accent/50 transition-colors">
+                  <Card 
+                    key={fixture.id} 
+                    className="p-4 hover:bg-accent/50 transition-colors bg-card shadow-sm"
+                  >
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
