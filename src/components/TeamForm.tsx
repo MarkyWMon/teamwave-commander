@@ -10,6 +10,7 @@ import { officialSchema } from "./TeamOfficialForm";
 import { Team } from "@/types/team";
 import TeamBasicInfoForm from "./TeamBasicInfoForm";
 import TeamOfficialsList from "./TeamOfficialsList";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(2, "Team name must be at least 2 characters"),
@@ -29,6 +30,7 @@ interface TeamFormProps {
 const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!team;
+  const queryClient = useQueryClient();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -106,6 +108,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
 
       if (officialsError) throw officialsError;
 
+      await queryClient.invalidateQueries({ queryKey: ["teams"] });
       toast.success(isEditing ? "Team updated successfully" : "Team created successfully");
       onSuccess?.();
     } catch (error: any) {
