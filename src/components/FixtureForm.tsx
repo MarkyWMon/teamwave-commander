@@ -103,6 +103,7 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
             control={form.control}
             name="home_team_id"
             label="Home Team"
+            isOpponent={false}
           />
           
           <TeamSelect

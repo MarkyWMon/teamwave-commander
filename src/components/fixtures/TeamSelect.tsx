@@ -13,7 +13,7 @@ interface TeamSelectProps {
 
 const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProps) => {
   const { data: teams } = useQuery({
-    queryKey: [isOpponent ? "away-teams" : "home-teams"],
+    queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("teams")
