@@ -21,14 +21,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
-  club_name: z.string().min(2, "Club name must be at least 2 characters").optional(),
+  club_name: z.string().min(2, "Club name must be at least 2 characters"),
 });
+
+const DEFAULT_CLUB = "Withdean Youth FC";
 
 const ProfileCard = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -55,9 +58,19 @@ const ProfileCard = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       full_name: profile?.full_name || "",
-      club_name: profile?.club_name || "",
+      club_name: profile?.club_name || DEFAULT_CLUB,
     },
   });
+
+  // Update form values when profile data is loaded
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        full_name: profile.full_name || "",
+        club_name: profile.club_name || DEFAULT_CLUB,
+      });
+    }
+  }, [profile, form]);
 
   const updateProfile = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
@@ -177,7 +190,7 @@ const ProfileCard = () => {
                     <FormItem>
                       <FormLabel>Full Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} className="bg-background" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -190,9 +203,19 @@ const ProfileCard = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Club Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="Enter your club name" />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select club" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-background border shadow-lg">
+                          <SelectItem value={DEFAULT_CLUB}>{DEFAULT_CLUB}</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
