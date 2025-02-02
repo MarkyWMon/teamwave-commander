@@ -15,6 +15,7 @@ const formSchema = z.object({
   name: z.string().min(2, "Team name must be at least 2 characters"),
   age_group: z.string(),
   is_opponent: z.boolean().default(false),
+  team_color: z.string().optional(),
   officials: z.array(officialSchema),
 });
 
@@ -35,6 +36,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
       name: team?.name || "",
       age_group: team?.age_group || "U12",
       is_opponent: team?.is_opponent || false,
+      team_color: team?.team_color || "",
       officials: team?.team_officials?.map(official => ({
         full_name: official.full_name,
         role: official.role,
@@ -50,15 +52,18 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("No session");
 
+      const teamData = {
+        name: values.is_opponent ? values.name : `Withdean Youth ${values.team_color}`.trim(),
+        age_group: values.age_group,
+        is_opponent: values.is_opponent,
+        team_color: values.team_color || "blue",
+      };
+
       if (isEditing && team) {
         // Update team
         const { error: teamError } = await supabase
           .from("teams")
-          .update({
-            name: values.name,
-            age_group: values.age_group,
-            is_opponent: values.is_opponent,
-          })
+          .update(teamData)
           .eq("id", team.id);
 
         if (teamError) throw teamError;
@@ -75,9 +80,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
         const { data: newTeam, error: teamError } = await supabase
           .from("teams")
           .insert({
-            name: values.name,
-            age_group: values.age_group,
-            is_opponent: values.is_opponent,
+            ...teamData,
             created_by: session.user.id,
             gender: "boys", // Default value, will be updated in next implementation
           })

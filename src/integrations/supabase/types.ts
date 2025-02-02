@@ -234,7 +234,12 @@ export type Database = {
         | "astroturf"
         | "other"
       team_gender: "boys" | "girls" | "mixed"
-      team_official_role: "manager" | "coach" | "assistant_manager" | "other"
+      team_official_role:
+        | "manager"
+        | "coach"
+        | "assistant_manager"
+        | "other"
+        | "fixtures_secretary"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -19,7 +19,7 @@ import {
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-const roles = ["manager", "coach", "assistant_manager", "other"] as const;
+const roles = ["manager", "coach", "assistant_manager", "fixtures_secretary", "other"] as const;
 
 export const officialSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
