@@ -12,7 +12,7 @@ interface TeamSelectProps {
 }
 
 const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProps) => {
-  const { data: teams } = useQuery({
+  const { data: teams, isLoading } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,8 +21,12 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
         .eq("is_opponent", isOpponent)
         .order("name");
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error("Error fetching teams:", error);
+        throw error;
+      }
+      
+      return data || [];
     },
   });
 
@@ -40,11 +44,19 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {teams?.map((team) => (
-                <SelectItem key={team.id} value={team.id}>
-                  {team.name} ({team.age_group})
+              {isLoading ? (
+                <SelectItem value="loading" disabled>Loading teams...</SelectItem>
+              ) : teams?.length === 0 ? (
+                <SelectItem value="no-teams" disabled>
+                  {isOpponent ? "No opponent teams found" : "No home teams found"}
                 </SelectItem>
-              ))}
+              ) : (
+                teams?.map((team) => (
+                  <SelectItem key={team.id} value={team.id}>
+                    {team.name} ({team.age_group})
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
           <FormMessage />

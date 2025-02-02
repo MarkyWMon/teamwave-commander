@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import TeamSelect from "./fixtures/TeamSelect";
 import DateTimeSelect from "./fixtures/DateTimeSelect";
-import { addMinutes, setHours, setMinutes } from "date-fns";
+import { setHours, setMinutes } from "date-fns";
 
 const formSchema = z.object({
   home_team_id: z.string().uuid("Please select a home team"),
