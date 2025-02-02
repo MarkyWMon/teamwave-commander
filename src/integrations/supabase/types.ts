@@ -108,6 +108,42 @@ export type Database = {
         }
         Relationships: []
       }
+      team_imports: {
+        Row: {
+          created_at: string
+          created_by: string
+          failed_rows: number | null
+          field_mappings: Json | null
+          file_name: string
+          id: string
+          processed_rows: number | null
+          status: string
+          total_rows: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          failed_rows?: number | null
+          field_mappings?: Json | null
+          file_name: string
+          id?: string
+          processed_rows?: number | null
+          status?: string
+          total_rows?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          failed_rows?: number | null
+          field_mappings?: Json | null
+          file_name?: string
+          id?: string
+          processed_rows?: number | null
+          status?: string
+          total_rows?: number | null
+        }
+        Relationships: []
+      }
       team_officials: {
         Row: {
           created_at: string
@@ -153,6 +189,7 @@ export type Database = {
           created_by: string
           gender: Database["public"]["Enums"]["team_gender"]
           id: string
+          is_opponent: boolean
           name: string
           team_color: string
         }
@@ -162,6 +199,7 @@ export type Database = {
           created_by: string
           gender?: Database["public"]["Enums"]["team_gender"]
           id?: string
+          is_opponent?: boolean
           name: string
           team_color?: string
         }
@@ -171,6 +209,7 @@ export type Database = {
           created_by?: string
           gender?: Database["public"]["Enums"]["team_gender"]
           id?: string
+          is_opponent?: boolean
           name?: string
           team_color?: string
         }

@@ -1,6 +1,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { UseFormReturn } from "react-hook-form";
 
 const ageGroups = Array.from({ length: 11 }, (_, i) => `U${i + 8}`);
@@ -19,7 +20,7 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
           <FormItem>
             <FormLabel>Team Name</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Enter team color (e.g., Red Team)" />
+              <Input {...field} placeholder="Enter team name" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -47,6 +48,27 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
               </SelectContent>
             </Select>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="is_opponent"
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+            <FormControl>
+              <Checkbox
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
+            <div className="space-y-1 leading-none">
+              <FormLabel>Opponent Team</FormLabel>
+              <p className="text-sm text-muted-foreground">
+                Mark this if this is an opponent team
+              </p>
+            </div>
           </FormItem>
         )}
       />

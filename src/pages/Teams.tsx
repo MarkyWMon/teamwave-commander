@@ -2,14 +2,17 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import TeamForm from "@/components/TeamForm";
 import TeamEditDialog from "@/components/TeamEditDialog";
+import { Badge } from "@/components/ui/badge";
+import TeamImportDialog from "@/components/TeamImportDialog";
 
 const Teams = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
 
   const { data: teams, isLoading } = useQuery({
     queryKey: ["teams"],
@@ -38,20 +41,36 @@ const Teams = () => {
           <h1 className="text-4xl font-bold tracking-tight">Teams</h1>
           <p className="text-lg text-foreground/60">Manage your teams and officials</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Team
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Add New Team</DialogTitle>
-            </DialogHeader>
-            <TeamForm onSuccess={() => setIsDialogOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex gap-2">
+          <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Upload className="h-4 w-4 mr-2" />
+                Import Teams
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Import Teams</DialogTitle>
+              </DialogHeader>
+              <TeamImportDialog onSuccess={() => setIsImportDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Team
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add New Team</DialogTitle>
+              </DialogHeader>
+              <TeamForm onSuccess={() => setIsDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {teams?.length === 0 ? (
@@ -65,7 +84,12 @@ const Teams = () => {
           {teams?.map((team) => (
             <Card key={team.id}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>{team.name}</CardTitle>
+                <div className="flex flex-col gap-2">
+                  <CardTitle>{team.name}</CardTitle>
+                  {team.is_opponent && (
+                    <Badge variant="secondary">Opponent</Badge>
+                  )}
+                </div>
                 <TeamEditDialog team={team} />
               </CardHeader>
               <CardContent>

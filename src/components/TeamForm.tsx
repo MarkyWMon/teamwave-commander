@@ -14,6 +14,7 @@ import TeamOfficialsList from "./TeamOfficialsList";
 const formSchema = z.object({
   name: z.string().min(2, "Team name must be at least 2 characters"),
   age_group: z.string(),
+  is_opponent: z.boolean().default(false),
   officials: z.array(officialSchema),
 });
 
@@ -33,6 +34,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
     defaultValues: {
       name: team?.name || "",
       age_group: team?.age_group || "U12",
+      is_opponent: team?.is_opponent || false,
       officials: team?.team_officials?.map(official => ({
         full_name: official.full_name,
         role: official.role,
@@ -55,6 +57,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
           .update({
             name: values.name,
             age_group: values.age_group,
+            is_opponent: values.is_opponent,
           })
           .eq("id", team.id);
 
@@ -74,6 +77,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
           .insert({
             name: values.name,
             age_group: values.age_group,
+            is_opponent: values.is_opponent,
             created_by: session.user.id,
             gender: "boys", // Default value, will be updated in next implementation
           })
