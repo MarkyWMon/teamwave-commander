@@ -15,6 +15,8 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const { data: teams, isLoading } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
+      console.log("Fetching teams with is_opponent =", isOpponent); // Debug log
+      
       const { data, error } = await supabase
         .from("teams")
         .select("*")
@@ -26,6 +28,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
         throw error;
       }
       
+      console.log("Teams fetched:", data); // Debug log
       return data || [];
     },
   });
