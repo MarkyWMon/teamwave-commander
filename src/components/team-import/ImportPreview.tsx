@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 interface ImportedTeam {
@@ -25,6 +26,13 @@ const TeamEditorDialog = ({ team, onSave, open, onOpenChange, roles }: TeamEdito
   const [editedTeam, setEditedTeam] = useState(team);
   const [selectedRole, setSelectedRole] = useState<string>("fixtures_secretary");
 
+  const handleInputChange = (field: keyof ImportedTeam, value: string) => {
+    setEditedTeam(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white">
@@ -32,6 +40,40 @@ const TeamEditorDialog = ({ team, onSave, open, onOpenChange, roles }: TeamEdito
           <DialogTitle>Edit Team Details</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Team Name</Label>
+            <Input
+              value={editedTeam.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Enter team name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Contact Name</Label>
+            <Input
+              value={editedTeam.contact_name || ''}
+              onChange={(e) => handleInputChange('contact_name', e.target.value)}
+              placeholder="Enter contact name"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Contact Email</Label>
+            <Input
+              type="email"
+              value={editedTeam.contact_email || ''}
+              onChange={(e) => handleInputChange('contact_email', e.target.value)}
+              placeholder="Enter contact email"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Contact Phone</Label>
+            <Input
+              type="tel"
+              value={editedTeam.contact_phone || ''}
+              onChange={(e) => handleInputChange('contact_phone', e.target.value)}
+              placeholder="Enter contact phone"
+            />
+          </div>
           <div className="space-y-2">
             <Label>Contact Role</Label>
             <Select onValueChange={setSelectedRole} value={selectedRole}>
@@ -48,7 +90,7 @@ const TeamEditorDialog = ({ team, onSave, open, onOpenChange, roles }: TeamEdito
             </Select>
           </div>
           <Button onClick={() => {
-            onSave({ ...editedTeam });
+            onSave(editedTeam);
             onOpenChange(false);
           }}>
             Save Changes
