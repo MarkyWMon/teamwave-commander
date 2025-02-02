@@ -9,6 +9,7 @@ interface ImportFieldMappingProps {
   onMappingChange: (field: string, value: string) => void;
   onPreviewClick: () => void;
   file: File | null;
+  onFileChange: (file: File) => void;
 }
 
 const ImportFieldMapping = ({ 
@@ -16,7 +17,8 @@ const ImportFieldMapping = ({
   mappings, 
   onMappingChange, 
   onPreviewClick,
-  file 
+  file,
+  onFileChange
 }: ImportFieldMappingProps) => {
   return (
     <div className="space-y-6">
@@ -24,7 +26,12 @@ const ImportFieldMapping = ({
         <Input
           type="file"
           accept=".csv"
-          onChange={(e) => e.target.files?.[0]}
+          onChange={(e) => {
+            const selectedFile = e.target.files?.[0];
+            if (selectedFile) {
+              onFileChange(selectedFile);
+            }
+          }}
           className="cursor-pointer"
         />
         <p className="text-sm text-muted-foreground mt-2">

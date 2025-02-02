@@ -38,20 +38,17 @@ const TeamImportDialog = ({ onSuccess }: TeamImportDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      Papa.parse(selectedFile, {
-        header: true,
-        preview: 1,
-        complete: (results) => {
-          if (results.meta.fields) {
-            setHeaders(results.meta.fields);
-          }
-        },
-      });
-    }
+  const handleFileChange = (selectedFile: File) => {
+    setFile(selectedFile);
+    Papa.parse(selectedFile, {
+      header: true,
+      preview: 1,
+      complete: (results) => {
+        if (results.meta.fields) {
+          setHeaders(results.meta.fields);
+        }
+      },
+    });
   };
 
   const handlePreview = () => {
@@ -145,6 +142,7 @@ const TeamImportDialog = ({ onSuccess }: TeamImportDialogProps) => {
           onMappingChange={(field, value) => setMappings(prev => ({ ...prev, [field]: value }))}
           onPreviewClick={handlePreview}
           file={file}
+          onFileChange={handleFileChange}
         />
       ) : (
         <ImportPreview
