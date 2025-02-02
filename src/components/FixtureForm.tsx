@@ -15,9 +15,9 @@ import { CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  home_team_id: z.string().uuid(),
-  away_team_id: z.string().uuid(),
-  pitch_id: z.string().uuid(),
+  home_team_id: z.string().uuid("Please select a home team"),
+  away_team_id: z.string().uuid("Please select an away team"),
+  pitch_id: z.string().uuid("Please select a pitch"),
   match_date: z.date(),
   notes: z.string().optional(),
 });
@@ -96,13 +96,18 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
 
     try {
       setIsSubmitting(true);
+      const fixtureData = {
+        home_team_id: values.home_team_id,
+        away_team_id: values.away_team_id,
+        pitch_id: values.pitch_id,
+        match_date: values.match_date.toISOString(),
+        notes: values.notes,
+        created_by: session.user.id,
+      };
+
       const { error } = await supabase
         .from("fixtures")
-        .insert({
-          ...values,
-          match_date: values.match_date.toISOString(),
-          created_by: session.user.id,
-        });
+        .insert(fixtureData);
 
       if (error) throw error;
       
