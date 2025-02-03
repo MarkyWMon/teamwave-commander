@@ -51,6 +51,12 @@ export const MatchNotificationEmail = ({
     day: 'numeric',
   });
 
+  const isPitchAtStringer = fixture.pitch.name.toLowerCase().includes('stringer') || 
+                           fixture.pitch.name.toLowerCase().includes('balfour') || 
+                           fixture.pitch.name.toLowerCase().includes('varndean');
+
+  const isStanleyDeason = fixture.pitch.name.toLowerCase().includes('stanley deason');
+
   return (
     <Html>
       <Head />
@@ -60,8 +66,6 @@ export const MatchNotificationEmail = ({
           <Text style={notice}>
             In the event of any issues impacting your fixture please communicate directly with your opposition manager - This email will NOT be monitored
           </Text>
-
-          <Heading style={h1}>Match Details Confirmation</Heading>
 
           <Text style={text}>Dear Fixtures Secretary,</Text>
 
@@ -100,33 +104,91 @@ export const MatchNotificationEmail = ({
           <Hr style={divider} />
 
           <Section style={detailsSection}>
-            <Text style={subheading}>Important Notes:</Text>
-            {fixture.pitch.parking_info && (
-              <Text style={text}>
-                <strong>Parking Information:</strong> {fixture.pitch.parking_info}
-              </Text>
-            )}
-            {fixture.pitch.access_instructions && (
-              <Text style={text}>
-                <strong>Access Instructions:</strong> {fixture.pitch.access_instructions}
-              </Text>
-            )}
-            {fixture.pitch.equipment_requirements && (
-              <Text style={text}>
-                <strong>Equipment Requirements:</strong> {fixture.pitch.equipment_requirements}
-              </Text>
-            )}
-            {fixture.pitch.amenities?.toilets && (
-              <Text style={text}>
-                <strong>Toilets:</strong> Available on site
-              </Text>
-            )}
+            <Text style={subheading}>Referees:</Text>
+            <Text style={text}>
+              Referees have been requested for all fixtures but are as yet unconfirmed
+            </Text>
           </Section>
+
+          <Hr style={divider} />
+
+          {isPitchAtStringer && (
+            <Section style={detailsSection}>
+              <Text style={subheading}>Dorothy Stringer/Balfour/Varndean Information:</Text>
+              <Text style={text}>
+                <strong>Parking:</strong> Parking for all of these pitches is at Dorothy Stringer School, Loder Road, BN1 6PL. 
+                Follow the blue lines on the map to reach your designated pitch.
+              </Text>
+              <Text style={text}>
+                <strong>Toilets:</strong> Toilet Access for all attendees to Stringer/Varndean/Balfour is in Dorothy Stringer 
+                opposite the 3G entrance.
+              </Text>
+            </Section>
+          )}
+
+          {isStanleyDeason && (
+            <Section style={detailsSection}>
+              <Text style={subheading}>Stanley Deason 3G Information:</Text>
+              <Text style={text}>
+                This pitch is NOT at the Dorothy Stringer campus. The leisure centre is located at 120 Wilson Avenue, BN2 5BP.
+              </Text>
+              <Text style={text}>
+                <strong>Parking:</strong> Parking will be obvious when you arrive at the centre.
+              </Text>
+              <Text style={text}>
+                <strong>Toilets:</strong> Toilets can be found within the main leisure centre building.
+              </Text>
+              <Text style={subheading}>Strict Boot Policy:</Text>
+              <Text style={text}>
+                Stanley Deason 3G pitch has strict boot rules and centre staff will be doing a boot check before kick-off.
+              </Text>
+              <Text style={text}>
+                <strong>Not Allowed:</strong>
+                • Any Dirty Boots
+                • Trainers
+                • Old Style Blades
+                • Astro Boots
+              </Text>
+              <Text style={text}>
+                <strong>Allowed:</strong>
+                • All Screw in Studs (including metal studs)
+                • Modern Moulded Stud Football Boots
+              </Text>
+            </Section>
+          )}
+
+          {fixture.pitch.parking_info && (
+            <Text style={text}>
+              <strong>Additional Parking Information:</strong> {fixture.pitch.parking_info}
+            </Text>
+          )}
+
+          {fixture.pitch.access_instructions && (
+            <Text style={text}>
+              <strong>Access Instructions:</strong> {fixture.pitch.access_instructions}
+            </Text>
+          )}
+
+          {fixture.pitch.equipment_requirements && (
+            <Text style={text}>
+              <strong>Equipment Requirements:</strong> {fixture.pitch.equipment_requirements}
+            </Text>
+          )}
 
           <Hr style={divider} />
 
           <Text style={text}>
             Please confirm receipt by replying to this email and copying in the relevant {fixture.home_team.name} manager.
+          </Text>
+
+          <Text style={text}>
+            Any issues: Managers please contact your opposition directly using the contact details supplied if you have any 
+            issues that will impact your attendance (ideally by phone call or text message).
+          </Text>
+
+          <Text style={text}>
+            Please Contact Managers Directly: Our Fixtures secretaries will not pick up on late messages so it is vital you 
+            communicate directly with your opposition manager once you have been put in touch.
           </Text>
 
           <Text style={text}>
@@ -164,15 +226,6 @@ const notice = {
   backgroundColor: '#fff1f2',
   borderRadius: '4px',
   marginBottom: '24px',
-};
-
-const h1 = {
-  color: '#1a1a1a',
-  fontSize: '24px',
-  fontWeight: '600',
-  lineHeight: '1.25',
-  marginBottom: '24px',
-  textAlign: 'center' as const,
 };
 
 const text = {
