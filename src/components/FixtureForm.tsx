@@ -63,14 +63,14 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
       const [hours, minutes] = values.kick_off_time.split(":").map(Number);
       const matchDateTime = setMinutes(setHours(values.match_date, hours), minutes);
 
-      const fixtureData = {
+      const fixtureData: Database["public"]["Tables"]["fixtures"]["Insert"] = {
         home_team_id: values.home_team_id,
         away_team_id: values.away_team_id,
         pitch_id: values.pitch_id,
         match_date: matchDateTime.toISOString(),
         notes: values.notes || "",
         created_by: session.user.id,
-        status: 'scheduled' as MatchStatus,
+        status: "scheduled" as MatchStatus,
       };
 
       console.log("Sending fixture data to Supabase:", fixtureData);
