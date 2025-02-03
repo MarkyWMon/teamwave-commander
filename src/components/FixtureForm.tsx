@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import TeamSelect from "./fixtures/TeamSelect";
 import DateTimeSelect from "./fixtures/DateTimeSelect";
+import PitchSelect from "./fixtures/PitchSelect";
 import { setHours, setMinutes, nextSunday } from "date-fns";
 
 const formSchema = z.object({
@@ -44,19 +44,6 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
       if (error) throw error;
       if (!session) throw new Error("No session");
       return session;
-    },
-  });
-
-  const { data: pitches } = useQuery({
-    queryKey: ["pitches"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("pitches")
-        .select("*")
-        .order("name");
-      
-      if (error) throw error;
-      return data;
     },
   });
 
@@ -113,31 +100,7 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
             isOpponent={true}
           />
 
-          <FormField
-            control={form.control}
-            name="pitch_id"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Pitch</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select pitch" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent className="bg-background">
-                    {pitches?.map((pitch) => (
-                      <SelectItem key={pitch.id} value={pitch.id}>
-                        {pitch.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
+          <PitchSelect control={form.control} />
           <DateTimeSelect control={form.control} />
         </div>
 
