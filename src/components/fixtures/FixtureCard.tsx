@@ -12,6 +12,12 @@ interface FixtureCardProps {
 
 const FixtureCard = ({ fixture, onClick }: FixtureCardProps) => {
   const [isEmailPreviewOpen, setIsEmailPreviewOpen] = useState(false);
+  const statusColor = {
+    scheduled: "bg-primary/10 text-primary",
+    cancelled: "bg-destructive/10 text-destructive",
+    completed: "bg-green-500/10 text-green-500",
+    postponed: "bg-yellow-500/10 text-yellow-500"
+  };
 
   return (
     <>
@@ -33,12 +39,16 @@ const FixtureCard = ({ fixture, onClick }: FixtureCardProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setIsEmailPreviewOpen(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEmailPreviewOpen(true);
+                }}
+                disabled={fixture.status === 'cancelled'}
               >
                 <Mail className="h-4 w-4 mr-1" />
                 Email
               </Button>
-              <span className="text-sm font-medium px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className={`text-sm font-medium px-2.5 py-0.5 rounded-full ${statusColor[fixture.status as keyof typeof statusColor]}`}>
                 {fixture.status}
               </span>
             </div>
