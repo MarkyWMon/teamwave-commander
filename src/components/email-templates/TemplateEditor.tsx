@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -38,8 +38,13 @@ const TemplateEditor = () => {
 
   const onSubmit = async (values: TemplateFormValues) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error("User not authenticated");
+
       const { error } = await supabase.from("email_templates").insert({
         ...values,
+        created_by: user.id,
         template_type: "match_notification",
       });
 

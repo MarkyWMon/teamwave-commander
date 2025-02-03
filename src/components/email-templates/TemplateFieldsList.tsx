@@ -1,4 +1,4 @@
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { GripVertical } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const fields = {
@@ -43,7 +43,7 @@ const TemplateFieldsList = () => {
                 draggable
                 onDragStart={(e) => handleDragStart(e, field.name)}
               >
-                <DragHandleDots2Icon className="h-4 w-4 text-muted-foreground" />
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">{field.label}</span>
               </Card>
             ))}
