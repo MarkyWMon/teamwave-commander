@@ -44,17 +44,29 @@ const Index = () => {
       const { data, error } = await supabase
         .from("fixtures")
         .select(`
-          *,
-          home_team:teams!fixtures_home_team_id_fkey(*),
-          away_team:teams!fixtures_away_team_id_fkey(*),
-          pitch:pitches(*)
+          id,
+          match_date,
+          status,
+          home_team:teams!fixtures_home_team_id_fkey(id, name),
+          away_team:teams!fixtures_away_team_id_fkey(id, name),
+          pitch:pitches(id, name)
         `)
         .gte('match_date', new Date().toISOString())
         .order('match_date')
         .limit(6);
 
       if (error) throw error;
-      return data;
+      
+      // Ensure we have unique fixtures based on ID
+      const uniqueFixtures = data?.reduce((acc: any[], current) => {
+        const exists = acc.find(item => item.id === current.id);
+        if (!exists) {
+          acc.push(current);
+        }
+        return acc;
+      }, []) || [];
+      
+      return uniqueFixtures;
     },
   });
 
@@ -72,17 +84,29 @@ const Index = () => {
       const { data, error } = await supabase
         .from("fixtures")
         .select(`
-          *,
-          home_team:teams!fixtures_home_team_id_fkey(*),
-          away_team:teams!fixtures_away_team_id_fkey(*),
-          pitch:pitches(*)
+          id,
+          match_date,
+          status,
+          home_team:teams!fixtures_home_team_id_fkey(id, name),
+          away_team:teams!fixtures_away_team_id_fkey(id, name),
+          pitch:pitches(id, name)
         `)
         .gte("match_date", startOfDay.toISOString())
         .lte("match_date", endOfDay.toISOString())
         .order("match_date");
 
       if (error) throw error;
-      return data;
+      
+      // Ensure we have unique fixtures for the selected date
+      const uniqueFixtures = data?.reduce((acc: any[], current) => {
+        const exists = acc.find(item => item.id === current.id);
+        if (!exists) {
+          acc.push(current);
+        }
+        return acc;
+      }, []) || [];
+      
+      return uniqueFixtures;
     },
   });
 
