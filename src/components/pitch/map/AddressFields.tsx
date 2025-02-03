@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UseFormReturn } from "react-hook-form";
 import { Search } from "lucide-react";
+import { UseFormReturn } from "react-hook-form";
 import { geocodeAddress } from "./geocodingUtils";
 
 interface AddressFieldsProps {

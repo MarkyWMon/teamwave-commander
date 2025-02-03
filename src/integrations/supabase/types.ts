@@ -121,6 +121,7 @@ export type Database = {
           latitude: number
           lighting_type: Database["public"]["Enums"]["pitch_lighting"]
           longitude: number
+          map_url: string
           name: string
           parking_info: string | null
           postal_code: string
@@ -143,6 +144,7 @@ export type Database = {
           latitude: number
           lighting_type?: Database["public"]["Enums"]["pitch_lighting"]
           longitude: number
+          map_url: string
           name: string
           parking_info?: string | null
           postal_code: string
@@ -165,6 +167,7 @@ export type Database = {
           latitude?: number
           lighting_type?: Database["public"]["Enums"]["pitch_lighting"]
           longitude?: number
+          map_url?: string
           name?: string
           parking_info?: string | null
           postal_code?: string

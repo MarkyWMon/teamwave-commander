@@ -9,7 +9,7 @@ export const formSchema = z.object({
   postal_code: z.string().min(1, "Postal code is required"),
   latitude: z.number(),
   longitude: z.number(),
-  map_url: z.string().optional(),
+  map_url: z.string(),
   surface_type: z.enum(["grass", "artificial_grass", "hybrid", "3g", "4g", "5g", "astroturf", "other"]),
   lighting_type: z.enum(["none", "floodlights", "natural_only", "partial"]),
   parking_info: z.string().optional(),
