@@ -43,7 +43,10 @@ const TemplateEditor = () => {
       if (!user) throw new Error("User not authenticated");
 
       const { error } = await supabase.from("email_templates").insert({
-        ...values,
+        name: values.name,
+        description: values.description || null,
+        subject: values.subject,
+        content: values.content,
         created_by: user.id,
         template_type: "match_notification",
       });
