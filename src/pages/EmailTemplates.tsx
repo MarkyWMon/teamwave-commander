@@ -1,11 +1,14 @@
+import { Routes, Route } from "react-router-dom";
 import TemplateEditor from "@/components/email-templates/TemplateEditor";
+import TemplatesList from "@/components/email-templates/TemplatesList";
 
 const EmailTemplates = () => {
   return (
-    <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">Email Template Editor</h1>
-      <TemplateEditor />
-    </div>
+    <Routes>
+      <Route index element={<TemplatesList />} />
+      <Route path="new" element={<TemplateEditor />} />
+      <Route path=":id/edit" element={<TemplateEditor />} />
+    </Routes>
   );
 };
 

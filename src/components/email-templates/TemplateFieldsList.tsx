@@ -2,6 +2,12 @@ import { GripVertical } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const fields = {
+  Subject: [
+    { name: "home_team.name", label: "Home Team Name" },
+    { name: "away_team.name", label: "Away Team Name" },
+    { name: "home_team.age_group", label: "Age Group" },
+    { name: "match_date", label: "Match Date" },
+  ],
   Fixture: [
     { name: "match_date", label: "Match Date" },
     { name: "status", label: "Match Status" },
