@@ -16,13 +16,18 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const { data: teams, isLoading } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
+      console.log("Fetching teams with isOpponent:", isOpponent); // Debug log
       const { data, error } = await supabase
         .from("teams")
         .select("*")
         .eq("is_opponent", isOpponent)
         .order("name");
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching teams:", error); // Debug log
+        throw error;
+      }
+      console.log("Fetched teams:", data); // Debug log
       return data;
     },
   });
