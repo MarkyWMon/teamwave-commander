@@ -13,15 +13,49 @@ interface TeamSelectProps {
 }
 
 const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProps) => {
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      if (!session) throw new Error("No session");
+      return session;
+    },
+  });
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    enabled: !!session?.user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session!.user.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: teams, isLoading } = useQuery({
-    queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
+    queryKey: [isOpponent ? "opponent-teams" : "home-teams", profile?.managed_teams],
+    enabled: isOpponent || !!profile,
     queryFn: async () => {
       console.log("Fetching teams with isOpponent:", isOpponent); // Debug log
-      const { data, error } = await supabase
+      
+      let query = supabase
         .from("teams")
         .select("*")
         .eq("is_opponent", isOpponent)
         .order("name");
+
+      // If selecting home team, only show teams in managed_teams
+      if (!isOpponent && profile?.managed_teams) {
+        query = query.in("id", profile.managed_teams);
+      }
+      
+      const { data, error } = await query;
       
       if (error) {
         console.error("Error fetching teams:", error); // Debug log
