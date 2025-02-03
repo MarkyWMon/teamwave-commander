@@ -24,25 +24,31 @@ const TeamSelectList = ({
   onSelect,
   setOpen,
 }: TeamSelectListProps) => {
-  if (error) {
+  if (isLoading) {
     return (
-      <CommandItem disabled className="text-destructive">
-        Error loading teams. Please try again.
-      </CommandItem>
+      <CommandGroup>
+        <CommandItem disabled className="flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading teams...
+        </CommandItem>
+      </CommandGroup>
     );
   }
 
-  if (isLoading) {
+  if (error) {
     return (
-      <CommandItem disabled className="flex items-center gap-2">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        Loading teams...
-      </CommandItem>
+      <CommandGroup>
+        <CommandItem disabled className="text-destructive">
+          Error loading teams. Please try again.
+        </CommandItem>
+      </CommandGroup>
     );
   }
 
   if (teams.length === 0) {
-    return <CommandEmpty>No teams found.</CommandEmpty>;
+    return (
+      <CommandEmpty>No teams found.</CommandEmpty>
+    );
   }
 
   return (
