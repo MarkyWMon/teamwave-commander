@@ -13,20 +13,20 @@ serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, {
-      headers: {
-        ...corsHeaders,
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-      },
+      headers: corsHeaders,
     });
   }
 
   try {
     const { fixture } = await req.json();
+    console.log("Received fixture data:", fixture);
     
     // Render the email template
     const html = await renderAsync(
       React.createElement(MatchNotificationEmail, { fixture })
     );
+
+    console.log("Generated HTML content");
 
     return new Response(html, {
       headers: {

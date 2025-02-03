@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MatchEmailPreviewProps {
   fixture: any;
@@ -13,6 +14,7 @@ interface MatchEmailPreviewProps {
 const MatchEmailPreview = ({ fixture, open, onOpenChange }: MatchEmailPreviewProps) => {
   const { toast } = useToast();
   const [emailContent, setEmailContent] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const copyToClipboard = async () => {
     try {
@@ -33,26 +35,30 @@ const MatchEmailPreview = ({ fixture, open, onOpenChange }: MatchEmailPreviewPro
   // Fetch the email content when the dialog opens
   const loadEmailContent = async () => {
     try {
-      const response = await fetch("/api/match-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fixture }),
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('match-email', {
+        body: { fixture },
       });
       
-      if (!response.ok) throw new Error("Failed to generate email");
+      if (error) throw error;
       
-      const data = await response.text();
       setEmailContent(data);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error loading email content:', error);
       toast({
         title: "Error",
         description: "Failed to generate email content",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Load content when dialog opens
+  if (open && !emailContent && !isLoading) {
+    loadEmailContent();
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,20 +68,28 @@ const MatchEmailPreview = ({ fixture, open, onOpenChange }: MatchEmailPreviewPro
         </DialogHeader>
         
         <div className="space-y-4">
-          <Textarea
-            value={emailContent}
-            onChange={(e) => setEmailContent(e.target.value)}
-            className="min-h-[400px] font-mono text-sm"
-          />
-          
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Close
-            </Button>
-            <Button onClick={copyToClipboard}>
-              Copy to Clipboard
-            </Button>
-          </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+            </div>
+          ) : (
+            <>
+              <Textarea
+                value={emailContent}
+                onChange={(e) => setEmailContent(e.target.value)}
+                className="min-h-[400px] font-mono text-sm"
+              />
+              
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => onOpenChange(false)}>
+                  Close
+                </Button>
+                <Button onClick={copyToClipboard}>
+                  Copy to Clipboard
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
