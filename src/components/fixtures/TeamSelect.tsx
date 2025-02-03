@@ -1,12 +1,11 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Control } from "react-hook-form";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
@@ -21,7 +20,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: teams, isLoading } = useQuery({
+  const { data: teams = [], isLoading } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,7 +38,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     },
   });
 
-  const filteredTeams = teams?.filter(team => 
+  const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
   );
@@ -58,17 +57,25 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                   variant="outline"
                   role="combobox"
                   aria-expanded={open}
-                  className="w-full justify-between bg-background"
+                  className={cn(
+                    "w-full justify-between",
+                    !field.value && "text-muted-foreground"
+                  )}
                 >
-                  {field.value ? (
-                    teams?.find((team) => team.id === field.value)?.name
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading...
+                    </div>
+                  ) : field.value ? (
+                    teams.find((team) => team.id === field.value)?.name || "Select team"
                   ) : (
                     `Select ${label.toLowerCase()}`
                   )}
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
               <Command>
                 <CommandInput
                   placeholder={`Search ${label.toLowerCase()}...`}
@@ -79,13 +86,16 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                 <CommandEmpty>No team found.</CommandEmpty>
                 <CommandGroup className="max-h-[300px] overflow-y-auto">
                   {isLoading ? (
-                    <CommandItem disabled>Loading teams...</CommandItem>
-                  ) : filteredTeams?.length === 0 ? (
+                    <CommandItem disabled>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Loading teams...
+                    </CommandItem>
+                  ) : filteredTeams.length === 0 ? (
                     <CommandItem disabled>
                       {isOpponent ? "No opponent teams found" : "No home teams found"}
                     </CommandItem>
                   ) : (
-                    filteredTeams?.map((team) => (
+                    filteredTeams.map((team) => (
                       <CommandItem
                         key={team.id}
                         value={team.id}
