@@ -51,7 +51,11 @@ const FixtureEditDialog = ({ fixture, open, onOpenChange }: FixtureEditDialogPro
       away_team_id: fixture.away_team_id,
       pitch_id: fixture.pitch_id,
       match_date: new Date(fixture.match_date),
-      kick_off_time: new Date(fixture.match_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      kick_off_time: new Date(fixture.match_date).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      }),
       notes: fixture.notes || "",
     },
   });
