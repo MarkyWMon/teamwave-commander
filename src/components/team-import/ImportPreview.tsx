@@ -126,6 +126,15 @@ const ImportPreview = ({
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="outline" onClick={onBack}>
+          Back to Mapping
+        </Button>
+        <Button onClick={onSubmit} disabled={isLoading}>
+          {isLoading ? "Importing..." : "Import Teams"}
+        </Button>
+      </div>
+
       <div className="space-y-4">
         <h3 className="font-medium">Bulk Settings</h3>
         
