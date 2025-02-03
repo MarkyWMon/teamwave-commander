@@ -46,10 +46,10 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     staleTime: 30000,
   });
   
-  const filteredTeams = teams.filter(team => 
+  const filteredTeams = teams?.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  ) || [];
 
   return (
     <FormField
