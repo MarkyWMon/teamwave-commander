@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      email_templates: {
+        Row: {
+          content: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          subject: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          subject: string
+          template_type: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fixtures: {
         Row: {
           away_team_id: string
