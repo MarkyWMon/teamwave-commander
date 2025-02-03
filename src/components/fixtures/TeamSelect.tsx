@@ -3,6 +3,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Control } from "react-hook-form";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 interface TeamSelectProps {
   control: Control<any>;
@@ -12,6 +18,9 @@ interface TeamSelectProps {
 }
 
 const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProps) => {
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
   const { data: teams, isLoading } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
@@ -30,6 +39,11 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     },
   });
 
+  const filteredTeams = teams?.filter(team => 
+    team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    team.age_group.toLowerCase().includes(searchValue.toLowerCase())
+  );
+
   return (
     <FormField
       control={control}
@@ -37,28 +51,63 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger className="bg-background">
-                <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent className="bg-background">
-              {isLoading ? (
-                <SelectItem value="loading" disabled>Loading teams...</SelectItem>
-              ) : teams?.length === 0 ? (
-                <SelectItem value="no-teams" disabled>
-                  {isOpponent ? "No opponent teams found" : "No home teams found"}
-                </SelectItem>
-              ) : (
-                teams?.map((team) => (
-                  <SelectItem key={team.id} value={team.id}>
-                    {team.name} ({team.age_group})
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full justify-between bg-background"
+                >
+                  {field.value ? (
+                    teams?.find((team) => team.id === field.value)?.name
+                  ) : (
+                    `Select ${label.toLowerCase()}`
+                  )}
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+              <Command>
+                <CommandInput
+                  placeholder={`Search ${label.toLowerCase()}...`}
+                  value={searchValue}
+                  onValueChange={setSearchValue}
+                  className="h-9"
+                />
+                <CommandEmpty>No team found.</CommandEmpty>
+                <CommandGroup className="max-h-[300px] overflow-y-auto">
+                  {isLoading ? (
+                    <CommandItem disabled>Loading teams...</CommandItem>
+                  ) : filteredTeams?.length === 0 ? (
+                    <CommandItem disabled>
+                      {isOpponent ? "No opponent teams found" : "No home teams found"}
+                    </CommandItem>
+                  ) : (
+                    filteredTeams?.map((team) => (
+                      <CommandItem
+                        key={team.id}
+                        value={team.id}
+                        onSelect={() => {
+                          field.onChange(team.id);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            field.value === team.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {team.name} ({team.age_group})
+                      </CommandItem>
+                    ))
+                  )}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
           <FormMessage />
         </FormItem>
       )}
