@@ -15,7 +15,6 @@ import * as React from 'npm:react@18.3.1'
 interface MatchNotificationEmailProps {
   fixture: {
     match_date: string;
-    kick_off_time: string;
     home_team: {
       name: string;
       team_color: string;
@@ -79,7 +78,10 @@ export const MatchNotificationEmail = ({
               <strong>Date:</strong> {formattedDate}
             </Text>
             <Text style={text}>
-              <strong>Kick-off Time:</strong> {fixture.kick_off_time}
+              <strong>Kick-off Time:</strong> {new Date(fixture.match_date).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
             </Text>
             <Text style={text}>
               <strong>Venue:</strong> {fixture.pitch.name}
