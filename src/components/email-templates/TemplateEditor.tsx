@@ -8,7 +8,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import TemplateFieldsList from "./TemplateFieldsList";
 import { cn } from "@/lib/utils";
@@ -23,8 +23,8 @@ const formSchema = z.object({
 export type TemplateFormValues = z.infer<typeof formSchema>;
 
 const TemplateEditor = () => {
-  const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const form = useForm<TemplateFormValues>({
     resolver: zodResolver(formSchema),
@@ -38,31 +38,34 @@ const TemplateEditor = () => {
 
   const onSubmit = async (values: TemplateFormValues) => {
     try {
+      setIsSaving(true);
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) throw new Error("User not authenticated");
+      if (!user) {
+        toast.error("You must be logged in to save templates");
+        return;
+      }
 
-      const { error } = await supabase.from("email_templates").insert({
-        name: values.name,
-        description: values.description || null,
-        subject: values.subject,
-        content: values.content,
-        created_by: user.id,
-        template_type: "match_notification",
-      });
+      const { error } = await supabase
+        .from("email_templates")
+        .insert({
+          name: values.name,
+          description: values.description || null,
+          subject: values.subject,
+          content: values.content,
+          created_by: user.id,
+          template_type: "match_notification",
+        });
 
       if (error) throw error;
 
-      toast({
-        title: "Template saved",
-        description: "Your email template has been saved successfully.",
-      });
+      toast.success("Template saved successfully");
+      form.reset();
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      console.error("Error saving template:", error);
+      toast.error(error.message || "Failed to save template");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -158,7 +161,9 @@ const TemplateEditor = () => {
                 )}
               />
 
-              <Button type="submit">Save Template</Button>
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save Template"}
+              </Button>
             </form>
           </Form>
         </div>
