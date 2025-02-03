@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
-import { Plus, Clock, MapPin } from "lucide-react";
+import { Plus, Clock, MapPin, AlertCircle } from "lucide-react";
 import FixtureDialog from "@/components/FixtureDialog";
 import { format } from "date-fns";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -31,6 +32,25 @@ const Index = () => {
         .eq("id", session.user.id)
         .single();
       
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: allFixtures } = useQuery({
+    queryKey: ["all-fixtures"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("fixtures")
+        .select(`
+          *,
+          home_team:teams!fixtures_home_team_id_fkey(*),
+          away_team:teams!fixtures_away_team_id_fkey(*),
+          pitch:pitches(*)
+        `)
+        .gte('match_date', new Date().toISOString())
+        .order('match_date');
+
       if (error) throw error;
       return data;
     },
@@ -64,10 +84,29 @@ const Index = () => {
     },
   });
 
+  // Get dates with fixtures for calendar highlighting
+  const fixturesDates = allFixtures?.map(fixture => 
+    new Date(fixture.match_date)
+  ) || [];
+
   const firstName = profile?.full_name?.split(" ")[0] || "there";
+  const hasNoManagedTeams = !profile?.managed_teams?.length;
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
+      {hasNoManagedTeams && (
+        <Alert className="mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            You haven't selected any teams to manage yet. Visit your{" "}
+            <a href="/profile" className="font-medium underline underline-offset-4">
+              profile page
+            </a>{" "}
+            to select the teams you manage.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <div className="space-y-1">
           <h1 className="text-4xl font-bold tracking-tight">
@@ -77,7 +116,11 @@ const Index = () => {
             Manage your team's fixtures and schedules
           </p>
         </div>
-        <Button onClick={() => setIsFixtureDialogOpen(true)} size="lg">
+        <Button 
+          onClick={() => setIsFixtureDialogOpen(true)} 
+          size="lg"
+          disabled={hasNoManagedTeams}
+        >
           <Plus className="h-5 w-5 mr-2" />
           Add Fixture
         </Button>
@@ -92,6 +135,21 @@ const Index = () => {
               selected={date}
               onSelect={setDate}
               className="rounded-md border shadow-sm"
+              modifiers={{
+                highlighted: (date) => 
+                  fixturesDates.some(
+                    fixtureDate => 
+                      fixtureDate.getDate() === date.getDate() &&
+                      fixtureDate.getMonth() === date.getMonth() &&
+                      fixtureDate.getFullYear() === date.getFullYear()
+                  )
+              }}
+              modifiersStyles={{
+                highlighted: {
+                  backgroundColor: "rgb(var(--primary) / 0.1)",
+                  fontWeight: "bold"
+                }
+              }}
             />
           </div>
         </Card>
@@ -111,14 +169,16 @@ const Index = () => {
               {fixtures?.length === 0 ? (
                 <div className="text-center py-12 space-y-4">
                   <p className="text-muted-foreground">No fixtures scheduled for this date</p>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setIsFixtureDialogOpen(true)}
-                    className="mt-2"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Schedule a Fixture
-                  </Button>
+                  {!hasNoManagedTeams && (
+                    <Button 
+                      variant="outline"
+                      onClick={() => setIsFixtureDialogOpen(true)}
+                      className="mt-2"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Schedule a Fixture
+                    </Button>
+                  )}
                 </div>
               ) : (
                 fixtures?.map((fixture) => (
