@@ -20,6 +20,9 @@ export const submitPitchForm = async ({
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error("You must be logged in to manage pitches");
 
+    // Generate Google Maps URL from latitude and longitude
+    const mapUrl = `https://www.google.com/maps?q=${values.latitude},${values.longitude}`;
+
     // Ensure all required fields are present
     const pitchData: TablesInsert<"pitches"> = {
       name: values.name,
@@ -30,6 +33,7 @@ export const submitPitchForm = async ({
       postal_code: values.postal_code,
       latitude: values.latitude,
       longitude: values.longitude,
+      map_url: mapUrl,
       surface_type: values.surface_type,
       lighting_type: values.lighting_type,
       parking_info: values.parking_info,
