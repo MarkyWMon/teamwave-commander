@@ -5,9 +5,9 @@ import TemplatesList from "@/components/email-templates/TemplatesList";
 const EmailTemplates = () => {
   return (
     <Routes>
-      <Route index element={<TemplatesList />} />
-      <Route path="new" element={<TemplateEditor />} />
-      <Route path=":id/edit" element={<TemplateEditor />} />
+      <Route path="/" element={<TemplatesList />} />
+      <Route path="/new" element={<TemplateEditor />} />
+      <Route path="/:id/edit" element={<TemplateEditor />} />
     </Routes>
   );
 };
