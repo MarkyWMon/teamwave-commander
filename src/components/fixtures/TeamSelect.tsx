@@ -42,13 +42,14 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     staleTime: 30000,
   });
 
-  const filteredTeams = teams.filter(team => 
+  // Ensure teams is never undefined before filtering
+  const filteredTeams = teams?.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  ) || [];
 
   const getSelectedTeamName = (value: string | undefined) => {
-    if (!value) return "";
+    if (!value || !teams) return "";
     const team = teams.find((team) => team.id === value);
     return team ? `${team.name} (${team.age_group})` : "";
   };
