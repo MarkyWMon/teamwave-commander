@@ -15,7 +15,7 @@ export type Team = {
   is_opponent: boolean;
   gender: 'boys' | 'girls' | 'mixed';
   team_color: string;
-  team_officials: TeamOfficial[];
+  team_officials?: TeamOfficial[];
 };
 
 export type TeamOfficial = {

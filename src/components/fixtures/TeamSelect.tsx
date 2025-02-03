@@ -26,12 +26,12 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     queryFn: async () => {
       const { data, error } = await supabase
         .from("teams")
-        .select("id, name, age_group")
+        .select("*")
         .eq("is_opponent", isOpponent)
         .order("name");
       
       if (error) throw error;
-      return data || [];
+      return data as Team[];
     },
   });
 
