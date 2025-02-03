@@ -55,6 +55,8 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
 
     try {
       setIsSubmitting(true);
+      console.log("Submitting fixture with values:", values); // Debug log
+
       const [hours, minutes] = values.kick_off_time.split(":").map(Number);
       const matchDateTime = setMinutes(setHours(values.match_date, hours), minutes);
 
@@ -63,20 +65,30 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
         away_team_id: values.away_team_id,
         pitch_id: values.pitch_id,
         match_date: matchDateTime.toISOString(),
-        notes: values.notes,
+        notes: values.notes || "",
         created_by: session.user.id,
+        status: 'scheduled',
       };
 
-      const { error } = await supabase
-        .from("fixtures")
-        .insert(fixtureData);
+      console.log("Sending fixture data to Supabase:", fixtureData); // Debug log
 
-      if (error) throw error;
-      
+      const { data, error } = await supabase
+        .from("fixtures")
+        .insert(fixtureData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Supabase error:", error); // Debug log
+        throw error;
+      }
+
+      console.log("Fixture created successfully:", data); // Debug log
       toast.success("Fixture created successfully");
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Error creating fixture:", error); // Debug log
+      toast.error(error.message || "Failed to create fixture");
     } finally {
       setIsSubmitting(false);
     }
