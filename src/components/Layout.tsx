@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Mail } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import {
@@ -103,6 +103,12 @@ const Layout = () => {
               <NavItem to="/">Dashboard</NavItem>
               <NavItem to="/pitches">Pitches</NavItem>
               <NavItem to="/teams">Teams</NavItem>
+              <NavItem to="/templates">
+                <span className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  Templates
+                </span>
+              </NavItem>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

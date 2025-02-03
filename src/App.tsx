@@ -7,6 +7,7 @@ import Index from "@/pages/Index";
 import Teams from "@/pages/Teams";
 import Pitches from "@/pages/Pitches";
 import Profile from "@/pages/Profile";
+import EmailTemplates from "@/pages/EmailTemplates";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/teams" element={<Teams />} />
             <Route path="/pitches" element={<Pitches />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/templates" element={<EmailTemplates />} />
           </Route>
         </Routes>
       </BrowserRouter>
