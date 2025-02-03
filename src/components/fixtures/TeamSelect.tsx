@@ -16,16 +16,22 @@ interface TeamSelectProps {
   isOpponent?: boolean;
 }
 
+interface Team {
+  id: string;
+  name: string;
+  age_group: string;
+}
+
 const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: teams = [], isLoading } = useQuery({
+  const { data: teams = [], isLoading } = useQuery<Team[]>({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("teams")
-        .select("*")
+        .select("id, name, age_group")
         .eq("is_opponent", isOpponent)
         .order("name");
       
@@ -98,7 +104,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                     filteredTeams.map((team) => (
                       <CommandItem
                         key={team.id}
-                        value={team.id}
+                        value={team.name}
                         onSelect={() => {
                           field.onChange(team.id);
                           setOpen(false);
