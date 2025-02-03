@@ -2,13 +2,12 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Control } from "react-hook-form";
-import { Command, CommandInput } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { useState } from "react";
-import { Loader2, ChevronsUpDown } from "lucide-react";
+import { Check, Loader2, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Team } from "@/types/team";
-import TeamSelectList from "./TeamSelectList";
 import { cn } from "@/lib/utils";
 
 interface TeamSelectProps {
@@ -22,7 +21,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: teams, isLoading, error } = useQuery<Team[]>({
+  const { data, isLoading, error } = useQuery({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -36,13 +35,17 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     },
   });
 
-  const filteredTeams = teams?.filter(team => 
-    team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    team.age_group.toLowerCase().includes(searchValue.toLowerCase())
-  ) || [];
+  const teams = data || [];
+  
+  const filteredTeams = searchValue === "" 
+    ? teams 
+    : teams.filter(team => 
+        team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        team.age_group.toLowerCase().includes(searchValue.toLowerCase())
+      );
 
   const getSelectedTeamName = (value: string | undefined) => {
-    if (!value || !teams) return "";
+    if (!value) return "";
     const team = teams.find((team) => team.id === value);
     return team ? `${team.name} (${team.age_group})` : "";
   };
@@ -89,14 +92,38 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                   onValueChange={setSearchValue}
                   className="h-9"
                 />
-                <TeamSelectList
-                  isLoading={isLoading}
-                  error={error}
-                  teams={filteredTeams}
-                  selectedValue={field.value}
-                  onSelect={field.onChange}
-                  setOpen={setOpen}
-                />
+                <CommandEmpty>No teams found.</CommandEmpty>
+                <CommandGroup className="max-h-[300px] overflow-y-auto">
+                  {isLoading ? (
+                    <CommandItem disabled className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Loading teams...
+                    </CommandItem>
+                  ) : error ? (
+                    <CommandItem disabled className="text-destructive">
+                      Error loading teams. Please try again.
+                    </CommandItem>
+                  ) : (
+                    filteredTeams.map((team) => (
+                      <CommandItem
+                        key={team.id}
+                        value={team.id}
+                        onSelect={() => {
+                          field.onChange(team.id);
+                          setOpen(false);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            field.value === team.id ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {team.name} ({team.age_group})
+                      </CommandItem>
+                    ))
+                  )}
+                </CommandGroup>
               </Command>
             </PopoverContent>
           </Popover>
