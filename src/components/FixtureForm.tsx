@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import TeamSelect from "./fixtures/TeamSelect";
 import DateTimeSelect from "./fixtures/DateTimeSelect";
-import { setHours, setMinutes } from "date-fns";
+import { setHours, setMinutes, nextSunday } from "date-fns";
 
 const formSchema = z.object({
   home_team_id: z.string().uuid("Please select a home team"),
@@ -31,7 +31,7 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      match_date: new Date(),
+      match_date: nextSunday(new Date()),
       kick_off_time: "14:00",
       notes: "",
     },
@@ -121,11 +121,11 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
                 <FormLabel>Pitch</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-background">
                       <SelectValue placeholder="Select pitch" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
+                  <SelectContent className="bg-background">
                     {pitches?.map((pitch) => (
                       <SelectItem key={pitch.id} value={pitch.id}>
                         {pitch.name}

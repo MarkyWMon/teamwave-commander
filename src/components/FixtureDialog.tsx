@@ -9,7 +9,7 @@ interface FixtureDialogProps {
 const FixtureDialog = ({ open, onOpenChange }: FixtureDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-background border shadow-lg">
         <DialogHeader>
           <DialogTitle>Create New Fixture</DialogTitle>
         </DialogHeader>
