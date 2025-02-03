@@ -11,6 +11,9 @@ import TeamSelect from "./fixtures/TeamSelect";
 import DateTimeSelect from "./fixtures/DateTimeSelect";
 import PitchSelect from "./fixtures/PitchSelect";
 import { setHours, setMinutes, nextSunday } from "date-fns";
+import type { Database } from "@/integrations/supabase/types";
+
+type MatchStatus = Database["public"]["Enums"]["match_status"];
 
 const formSchema = z.object({
   home_team_id: z.string().uuid("Please select a home team"),
@@ -55,7 +58,7 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
 
     try {
       setIsSubmitting(true);
-      console.log("Submitting fixture with values:", values); // Debug log
+      console.log("Submitting fixture with values:", values);
 
       const [hours, minutes] = values.kick_off_time.split(":").map(Number);
       const matchDateTime = setMinutes(setHours(values.match_date, hours), minutes);
@@ -67,10 +70,10 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
         match_date: matchDateTime.toISOString(),
         notes: values.notes || "",
         created_by: session.user.id,
-        status: 'scheduled',
+        status: 'scheduled' as MatchStatus,
       };
 
-      console.log("Sending fixture data to Supabase:", fixtureData); // Debug log
+      console.log("Sending fixture data to Supabase:", fixtureData);
 
       const { data, error } = await supabase
         .from("fixtures")
@@ -79,15 +82,15 @@ const FixtureForm = ({ onSuccess }: FixtureFormProps) => {
         .single();
 
       if (error) {
-        console.error("Supabase error:", error); // Debug log
+        console.error("Supabase error:", error);
         throw error;
       }
 
-      console.log("Fixture created successfully:", data); // Debug log
+      console.log("Fixture created successfully:", data);
       toast.success("Fixture created successfully");
       onSuccess?.();
     } catch (error: any) {
-      console.error("Error creating fixture:", error); // Debug log
+      console.error("Error creating fixture:", error);
       toast.error(error.message || "Failed to create fixture");
     } finally {
       setIsSubmitting(false);
