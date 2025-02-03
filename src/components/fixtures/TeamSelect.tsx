@@ -26,7 +26,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data: teams = [], isLoading } = useQuery<Team[]>({
+  const { data, isLoading, error } = useQuery<Team[]>({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -44,10 +44,17 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     },
   });
 
+  const teams = data || [];
+  
   const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
   );
+
+  if (error) {
+    console.error("Error in TeamSelect:", error);
+    return <div>Error loading teams. Please try again.</div>;
+  }
 
   return (
     <FormField
