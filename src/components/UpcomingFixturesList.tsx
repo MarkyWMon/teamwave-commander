@@ -1,12 +1,16 @@
+import { useState } from "react";
 import { format } from "date-fns";
 import { Clock, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import FixtureEditDialog from "./FixtureEditDialog";
 
 interface UpcomingFixturesListProps {
   fixtures: any[];
 }
 
 const UpcomingFixturesList = ({ fixtures }: UpcomingFixturesListProps) => {
+  const [selectedFixture, setSelectedFixture] = useState<any>(null);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -25,7 +29,8 @@ const UpcomingFixturesList = ({ fixtures }: UpcomingFixturesListProps) => {
           {fixtures.map((fixture) => (
             <Card 
               key={fixture.id} 
-              className="p-4 hover:bg-accent/50 transition-colors bg-card shadow-sm"
+              className="p-4 hover:bg-accent/50 transition-colors bg-card shadow-sm cursor-pointer"
+              onClick={() => setSelectedFixture(fixture)}
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between">
@@ -55,6 +60,14 @@ const UpcomingFixturesList = ({ fixtures }: UpcomingFixturesListProps) => {
             </Card>
           ))}
         </div>
+      )}
+
+      {selectedFixture && (
+        <FixtureEditDialog
+          fixture={selectedFixture}
+          open={!!selectedFixture}
+          onOpenChange={(open) => !open && setSelectedFixture(null)}
+        />
       )}
     </div>
   );
