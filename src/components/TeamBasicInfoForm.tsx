@@ -1,7 +1,7 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 
@@ -33,19 +33,33 @@ const TeamBasicInfoForm = ({ form }: TeamBasicInfoFormProps) => {
         control={form.control}
         name="is_opponent"
         render={({ field }) => (
-          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+          <FormItem className="space-y-3">
+            <FormLabel>Team Type</FormLabel>
             <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
+              <RadioGroup
+                onValueChange={(value) => field.onChange(value === "opponent")}
+                value={field.value ? "opponent" : "home"}
+                className="flex flex-col space-y-1"
+              >
+                <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="home" />
+                  </FormControl>
+                  <FormLabel className="font-normal">
+                    Home Team
+                  </FormLabel>
+                </FormItem>
+                <FormItem className="flex items-center space-x-3 space-y-0">
+                  <FormControl>
+                    <RadioGroupItem value="opponent" />
+                  </FormControl>
+                  <FormLabel className="font-normal">
+                    Opponent Team
+                  </FormLabel>
+                </FormItem>
+              </RadioGroup>
             </FormControl>
-            <div className="space-y-1 leading-none">
-              <FormLabel>Team Type</FormLabel>
-              <p className="text-sm text-muted-foreground">
-                {field.value ? "Opponent Team" : "Home Team"}
-              </p>
-            </div>
+            <FormMessage />
           </FormItem>
         )}
       />
