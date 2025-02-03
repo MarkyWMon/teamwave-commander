@@ -26,7 +26,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const { data, isLoading, error } = useQuery<Team[]>({
+  const { data: teams = [], isLoading, error } = useQuery<Team[]>({
     queryKey: [isOpponent ? "opponent-teams" : "home-teams"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -42,9 +42,9 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
       
       return data || [];
     },
+    retry: 2,
+    staleTime: 30000,
   });
-
-  const teams = data || [];
   
   const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
