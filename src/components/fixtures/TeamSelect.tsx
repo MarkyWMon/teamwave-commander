@@ -35,21 +35,23 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
         .eq("is_opponent", isOpponent)
         .order("name");
       
-      if (error) {
-        console.error("Error fetching teams:", error);
-        throw error;
-      }
-      
+      if (error) throw error;
       return data || [];
     },
     retry: 2,
     staleTime: 30000,
   });
-  
-  const filteredTeams = teams?.filter(team => 
+
+  const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
-  ) || [];
+  );
+
+  const getSelectedTeamName = (value: string | undefined) => {
+    if (!value) return "";
+    const team = teams.find((team) => team.id === value);
+    return team ? `${team.name} (${team.age_group})` : "";
+  };
 
   return (
     <FormField
@@ -76,10 +78,8 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                       <Loader2 className="h-4 w-4 animate-spin" />
                       Loading...
                     </div>
-                  ) : field.value ? (
-                    teams.find((team) => team.id === field.value)?.name || "Select team"
                   ) : (
-                    `Select ${label.toLowerCase()}`
+                    getSelectedTeamName(field.value) || `Select ${label.toLowerCase()}`
                   )}
                 </Button>
               </FormControl>
@@ -100,8 +100,8 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                   <CommandEmpty>No team found.</CommandEmpty>
                   <CommandGroup className="max-h-[300px] overflow-y-auto">
                     {isLoading ? (
-                      <CommandItem disabled>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <CommandItem disabled className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
                         Loading teams...
                       </CommandItem>
                     ) : filteredTeams.length === 0 ? (
