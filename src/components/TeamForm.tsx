@@ -58,7 +58,7 @@ const TeamForm = ({ team, onSuccess }: TeamFormProps) => {
         name: values.name,
         age_group: values.age_group,
         is_opponent: values.is_opponent,
-        team_color: values.is_opponent ? null : (values.team_color || "blue"),
+        team_color: values.team_color || "gray", // Set a default color if none provided
       };
 
       if (isEditing && team) {
