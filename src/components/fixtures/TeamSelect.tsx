@@ -51,11 +51,6 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
     team.age_group.toLowerCase().includes(searchValue.toLowerCase())
   );
 
-  if (error) {
-    console.error("Error in TeamSelect:", error);
-    return <div>Error loading teams. Please try again.</div>;
-  }
-
   return (
     <FormField
       control={control}
@@ -74,6 +69,7 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
                     "w-full justify-between",
                     !field.value && "text-muted-foreground"
                   )}
+                  disabled={isLoading}
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
@@ -89,46 +85,52 @@ const TeamSelect = ({ control, name, label, isOpponent = false }: TeamSelectProp
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-              <Command>
-                <CommandInput
-                  placeholder={`Search ${label.toLowerCase()}...`}
-                  value={searchValue}
-                  onValueChange={setSearchValue}
-                  className="h-9"
-                />
-                <CommandEmpty>No team found.</CommandEmpty>
-                <CommandGroup className="max-h-[300px] overflow-y-auto">
-                  {isLoading ? (
-                    <CommandItem disabled>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Loading teams...
-                    </CommandItem>
-                  ) : filteredTeams.length === 0 ? (
-                    <CommandItem disabled>
-                      {isOpponent ? "No opponent teams found" : "No home teams found"}
-                    </CommandItem>
-                  ) : (
-                    filteredTeams.map((team) => (
-                      <CommandItem
-                        key={team.id}
-                        value={team.name}
-                        onSelect={() => {
-                          field.onChange(team.id);
-                          setOpen(false);
-                        }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            field.value === team.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        {team.name} ({team.age_group})
+              {error ? (
+                <div className="p-4 text-sm text-destructive">
+                  Error loading teams. Please try again.
+                </div>
+              ) : (
+                <Command>
+                  <CommandInput
+                    placeholder={`Search ${label.toLowerCase()}...`}
+                    value={searchValue}
+                    onValueChange={setSearchValue}
+                    className="h-9"
+                  />
+                  <CommandEmpty>No team found.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {isLoading ? (
+                      <CommandItem disabled>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Loading teams...
                       </CommandItem>
-                    ))
-                  )}
-                </CommandGroup>
-              </Command>
+                    ) : filteredTeams.length === 0 ? (
+                      <CommandItem disabled>
+                        {isOpponent ? "No opponent teams found" : "No home teams found"}
+                      </CommandItem>
+                    ) : (
+                      filteredTeams.map((team) => (
+                        <CommandItem
+                          key={team.id}
+                          onSelect={() => {
+                            field.onChange(team.id);
+                            setOpen(false);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              field.value === team.id ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {team.name} ({team.age_group})
+                        </CommandItem>
+                      ))
+                    )}
+                  </CommandGroup>
+                </Command>
+              )}
             </PopoverContent>
           </Popover>
           <FormMessage />
