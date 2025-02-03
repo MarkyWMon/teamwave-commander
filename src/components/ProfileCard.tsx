@@ -25,6 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import TeamManagementSection from "./profile/TeamManagementSection";
 
 const formSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
@@ -94,6 +95,27 @@ const ProfileCard = () => {
     },
   });
 
+  const updateManagedTeams = useMutation({
+    mutationFn: async (teamIds: string[]) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("No session");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ managed_teams: teamIds })
+        .eq("id", session.user.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      toast.success("Managed teams updated successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -130,113 +152,120 @@ const ProfileCard = () => {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Manage your profile information</CardDescription>
-        </div>
-        {!isEditing && (
-          <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
-            <Edit className="h-4 w-4" />
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback>
-                  <User className="h-10 w-10" />
-                </AvatarFallback>
-              </Avatar>
-              <label
-                htmlFor="avatar-upload"
-                className="absolute bottom-0 right-0 rounded-full bg-primary p-1 cursor-pointer hover:bg-primary/90 transition-colors"
-              >
-                <Camera className="h-4 w-4 text-primary-foreground" />
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                />
-              </label>
-            </div>
-            {!isEditing && (
-              <div>
-                <h3 className="font-medium">{profile?.full_name}</h3>
-                <p className="text-sm text-muted-foreground">{profile?.email}</p>
-                {profile?.club_name && (
-                  <p className="text-sm text-muted-foreground">Club: {profile.club_name}</p>
-                )}
+    <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Manage your profile information</CardDescription>
+          </div>
+          {!isEditing && (
+            <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+              <Edit className="h-4 w-4" />
+            </Button>
+          )}
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={profile?.avatar_url} />
+                  <AvatarFallback>
+                    <User className="h-10 w-10" />
+                  </AvatarFallback>
+                </Avatar>
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute bottom-0 right-0 rounded-full bg-primary p-1 cursor-pointer hover:bg-primary/90 transition-colors"
+                >
+                  <Camera className="h-4 w-4 text-primary-foreground" />
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
+                </label>
               </div>
+              {!isEditing && (
+                <div>
+                  <h3 className="font-medium">{profile?.full_name}</h3>
+                  <p className="text-sm text-muted-foreground">{profile?.email}</p>
+                  {profile?.club_name && (
+                    <p className="text-sm text-muted-foreground">Club: {profile.club_name}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {isEditing && (
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit((values) => updateProfile.mutate(values))}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="full_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-background" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="club_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Club Name</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-background">
+                              <SelectValue placeholder="Select club" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="bg-background border shadow-lg">
+                            <SelectItem value={DEFAULT_CLUB}>{DEFAULT_CLUB}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex gap-2">
+                    <Button type="submit">Save Changes</Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             )}
           </div>
+        </CardContent>
+      </Card>
 
-          {isEditing && (
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((values) => updateProfile.mutate(values))}
-                className="space-y-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="full_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} className="bg-background" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="club_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Club Name</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="bg-background">
-                            <SelectValue placeholder="Select club" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-background border shadow-lg">
-                          <SelectItem value={DEFAULT_CLUB}>{DEFAULT_CLUB}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex gap-2">
-                  <Button type="submit">Save Changes</Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditing(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      <TeamManagementSection
+        managedTeams={profile?.managed_teams || []}
+        onTeamsChange={(teamIds) => updateManagedTeams.mutate(teamIds)}
+      />
+    </div>
   );
 };
 
