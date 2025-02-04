@@ -3,6 +3,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "./types";
 import AddressFields from "./map/AddressFields";
 import LocationMap from "./map/LocationMap";
+import { LocationSearch } from "./map/LocationSearch";
 import { useState, useEffect } from "react";
 
 interface PitchLocationProps {
@@ -39,11 +40,12 @@ const PitchLocation = ({ form }: PitchLocationProps) => {
         <CardTitle>Location</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <AddressFields 
+        <LocationSearch 
           form={form} 
           mapboxToken={mapboxToken}
           onLocationFound={handleLocationFound}
         />
+        <AddressFields form={form} />
         <LocationMap 
           form={form}
           mapboxToken={mapboxToken}
