@@ -4,21 +4,51 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LocationSearchProps {
   form: UseFormReturn<any>;
-  mapboxToken: string | null;
   onLocationFound?: (coords: { longitude: number; latitude: number }) => void;
 }
 
-export const LocationSearch = ({ form, mapboxToken, onLocationFound }: LocationSearchProps) => {
+export const LocationSearch = ({ form, onLocationFound }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMapboxToken = async () => {
+      try {
+        console.log('Fetching Mapbox token for location search');
+        const { data, error } = await supabase.functions.invoke('mapbox-token');
+        
+        if (error) {
+          console.error('Error fetching Mapbox token:', error);
+          toast.error('Failed to initialize location search');
+          return;
+        }
+
+        if (!data.token) {
+          console.error('No token received from Edge Function');
+          return;
+        }
+
+        console.log('Successfully retrieved Mapbox token for location search');
+        setMapboxToken(data.token);
+      } catch (error) {
+        console.error('Error fetching Mapbox token:', error);
+        toast.error('Failed to initialize location search');
+      }
+    };
+
+    fetchMapboxToken();
+  }, []);
 
   const searchLocation = async () => {
     if (!mapboxToken || !searchQuery) return;
 
     try {
+      console.log('Searching location with query:', searchQuery);
       const response = await fetch(
         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
           searchQuery
@@ -28,7 +58,11 @@ export const LocationSearch = ({ form, mapboxToken, onLocationFound }: LocationS
       const data = await response.json();
 
       if (data.features && data.features.length > 0) {
+        console.log('Found locations:', data.features.length);
         setSuggestions(data.features);
+      } else {
+        console.log('No locations found');
+        toast.error('No locations found');
       }
     } catch (error) {
       console.error("Error searching location:", error);
@@ -38,6 +72,9 @@ export const LocationSearch = ({ form, mapboxToken, onLocationFound }: LocationS
 
   const handleSuggestionClick = (suggestion: any) => {
     const [longitude, latitude] = suggestion.center;
+    
+    console.log('Selected location:', suggestion.place_name);
+    console.log('Coordinates:', { longitude, latitude });
     
     // Update form values
     form.setValue("address_line1", suggestion.place_name);
